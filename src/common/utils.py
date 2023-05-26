@@ -15,27 +15,27 @@ plt.rcParams.update({"font.size": 8, "text.usetex": False})
 
 SEED = 42
 MODEL = "all-mpnet-base-v2"
-CITIES = (
-    pl.read_csv("data/cities.csv")
-    .sort("2020", descending=True)["major town and city"]
-    .str.to_lowercase()
-    .unique()
-    .to_list()
-)
-CITIES.extend(
-    [
-        "newcastle",
-        "saint helens",
-        "stockton",
-        "hull",
-        "stoke",
-        "southend",
-        "saint albans",
-        "glasgow",
-        "st. andrews",
-    ]
-)
-
+# CITIES = (
+#     pl.read_csv("data/cities.csv")
+#     .sort("2020", descending=True)["major town and city"]
+#     .str.to_lowercase()
+#     .unique()
+#     .to_list()
+# )
+# CITIES.extend(
+#     [
+#         "newcastle",
+#         "saint helens",
+#         "stockton",
+#         "hull",
+#         "stoke",
+#         "southend",
+#         "saint albans",
+#         "glasgow",
+#         "st. andrews",
+#     ]
+# )
+#
 
 class Paths:
     RAW = Path(os.environ["DATA_DIR"])

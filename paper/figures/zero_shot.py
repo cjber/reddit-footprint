@@ -3,7 +3,7 @@ import polars as pl
 import seaborn.objects as so
 from seaborn import axes_style
 
-from src.common.utils import CITIES, EXCLUDE, Paths
+from src.common.utils import EXCLUDE, Paths
 
 
 def plot_zero_shot(zero_shot_path):

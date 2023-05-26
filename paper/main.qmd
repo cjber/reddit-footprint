@@ -7,21 +7,15 @@ author:
     affiliations:
       - name: University of Liverpool
         department: Geographic Data Science Lab
-        # address: 1 Forestry Drive
-        # city: Syracuse, NY
-        # country: USA
-        # postal-code: 13210
-    orcid: 0000-0003-2402-304X
+    orcid: 0000-0003-2198-2245
     email: c.berragan@liverpool.ac.uk
-    # url: https://mm218.dev
 format:
   arxiv-pdf:
-    keep-md: true
-    keep-tex: true
+    # keep-md: true
+    # keep-tex: true
     linenumbers: true
     doublespacing: true
     runninghead: "A Preprint"
-  # arxiv-html: default
 keywords:
   - template
   - demo
