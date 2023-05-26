@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cillian Berragan">
+<meta name="keywords" content="template, demo">
+
+<title>Generating the Semantic Footprint of Regions in Great Britain</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="main_files/libs/clipboard/clipboard.min.js"></script>
+<script src="main_files/libs/quarto-html/quarto.js"></script>
+<script src="main_files/libs/quarto-html/popper.min.js"></script>
+<script src="main_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="main_files/libs/quarto-html/anchor.min.js"></script>
+<link href="main_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="main_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="main_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="main_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="main_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology"><span class="header-section-number">2</span> Methodology</a>
+  <ul class="collapse">
+  <li><a href="#similarity-of-regional-corpora" id="toc-similarity-of-regional-corpora" class="nav-link" data-scroll-target="#similarity-of-regional-corpora"><span class="header-section-number">2.1</span> Similarity of regional corpora</a></li>
+  <li><a href="#explainability-of-similarity" id="toc-explainability-of-similarity" class="nav-link" data-scroll-target="#explainability-of-similarity"><span class="header-section-number">2.2</span> Explainability of similarity</a></li>
+  </ul></li>
+  <li><a href="#results-discussion" id="toc-results-discussion" class="nav-link" data-scroll-target="#results-discussion"><span class="header-section-number">3</span> Results &amp; Discussion</a>
+  <ul class="collapse">
+  <li><a href="#topic-modelling" id="toc-topic-modelling" class="nav-link" data-scroll-target="#topic-modelling"><span class="header-section-number">3.1</span> Topic Modelling</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">4</span> Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../main.pdf"><i class="bi bi-file-pdf"></i>PDF (arxiv)</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Generating the Semantic Footprint of Regions in Great Britain</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Cillian Berragan <a href="https://orcid.org/0000-0003-2402-304X" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Liiverpool
+          </p>
+      </div>
+    </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Abstract</div>
+    <p>Social interaction is typically studied from the context of physical movement, where geographic distance and ease of connectivity influence the strength of interaction between regions. From the point of view of social media networks however, these limitations appear to still persist, despite interactions not being reliant on physical movement, suggesting non-physical geographic characteristics influence interaction between social communities. Unlike geotags, which provide explicit geographic information about social media users as coordinates, unstructured text presents an alternative perspective for the study of social interaction between regions. This text instead allows for the comparison between the language used when mentioning locations in context. Our paper analyses the corpora associated with major cities across the UK, first vectorising Reddit comments through transformer-based embeddings, which capture semantic information, then using these to establish unsupervised clusters and similarity between them. We find that distinct groups emerge which broadly conform with established regional identities of locations across the UK, but with interesting deviations.</p>
+    <div class="cell" data-execution_count="1">
+    <div class="cell-output cell-output-stderr">
+    <pre><code>/home/cjber/drive/phd/papers/reddit-footprint/.direnv/python-3.10.10/lib/python3.10/site-packages/geopandas/_compat.py:124: UserWarning:
+
+The Shapely GEOS version (3.11.1-CAPI-1.17.1) is incompatible with the GEOS version PyGEOS was compiled with (3.10.4-CAPI-1.16.2). Conversions between both will be slow.
+
+/tmp/ipykernel_208469/930036015.py:4: DeprecationWarning:
+
+Shapely 2.0 is installed, but because PyGEOS is also installed, GeoPandas still uses PyGEOS by default. However, starting with version 0.14, the default will switch to Shapely. To force to use Shapely 2.0 now, you can either uninstall PyGEOS or set the environment variable USE_PYGEOS=0. You can do this before starting the Python process, or in your code before importing geopandas:
+
+import os
+os.environ['USE_PYGEOS'] = '0'
+import geopandas
+
+In the next release, GeoPandas will switch to using Shapely by default, even if PyGEOS is installed. If you only have PyGEOS installed to get speed-ups, this switch should be smooth. However, if you are using PyGEOS directly (calling PyGEOS functions on geometries from GeoPandas), this will then stop working and you are encouraged to migrate from PyGEOS to Shapely 2.0 (https://shapely.readthedocs.io/en/latest/migration_pygeos.html).
+</code></pre>
+    </div>
+    </div>
+  </div>
+</div>
+
+</header>
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Social interaction is typically studied in the context of mobility, using data sources like Census or transport records, where physical movement is restricted by distance and ease of connectivity between two locations <span class="citation" data-cites="rae2009 titheridge2009">(<a href="#ref-rae2009" role="doc-biblioref">Rae 2009</a>; <a href="#ref-titheridge2009" role="doc-biblioref">Titheridge et al. 2009</a>)</span>. In contrast to this, social interaction has also been studied using phone call data <span class="citation" data-cites="sobolevsky2013">(<a href="#ref-sobolevsky2013" role="doc-biblioref">Sobolevsky et al. 2013</a>)</span>, and social media networks <span class="citation" data-cites="lengyel2015">(<a href="#ref-lengyel2015" role="doc-biblioref">Lengyel et al. 2015</a>)</span>, where the spatial and temporal bounds of connectivity between two locations does not restrict interactions. Despite this however, many studies have found that geographic identities within communities still persist in these networks, with interaction strength influenced by the geographic distance between them <span class="citation" data-cites="arthur2019 ratti2010">(<a href="#ref-arthur2019" role="doc-biblioref">Arthur and Williams 2019</a>; <a href="#ref-ratti2010" role="doc-biblioref">Ratti et al. 2010</a>)</span>.</p>
+<p>Social media also presents rich semantic information regarding locations through text associated with geotagged social media posts. Comparative analysis of corpora associated with geotagged locations similarly exhibit regionality; for example, tweets from the North East of England are statistically different compared with the South <span class="citation" data-cites="arthur2019">(<a href="#ref-arthur2019" role="doc-biblioref">Arthur and Williams 2019</a>)</span>.</p>
+<p>Our paper explores the similarity of corpora with respect to locational mentions from data taken directly from text, without relying on geotagged metadata. This approach offers an alternative perspective for the analysis of social interaction, built directly from the semantic information associated with locations, rather than the location associated with social media users themselves. Collective semantic information from social media embeds the regional identity of locations across a continuous spectrum, allowing for the direct comparison between these identities and their relationships.</p>
+</section>
+<section id="methodology" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Methodology</h1>
+<p>The following section gives an overview of our data source and the data processing methodology used in our paper. All code, analysis and data are available on our <a href="https://dagshub.com/cjber/reddit-geoext">DagsHub repository</a>.</p>
+<div class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<p><a href="https://reddit.com">Reddit</a> is a public discussion, news aggregation social network, among the top 20 most visited websites in the United Kingdom. As of 2020, Reddit had around 430 million active monthly users, comparable to the number of Twitter users <span class="citation" data-cites="murphy2019 statista2022">(<a href="#ref-murphy2019" role="doc-biblioref">Murphy 2019</a>; <a href="#ref-statista2022" role="doc-biblioref">Statista 2022</a>)</span>. Reddit is divided into separate independent <em>subreddits</em> each with specific topics of discussion, where <em>users</em> may submit <em>posts</em> which each have dedicated nested conversation threads that users can add <em>comments</em> to. Subreddits cover a wide range of topics, and in the interest of geography, they also act as forums for the discussion of local places. The <a href="https://reddit.com/r/unitedkingdom">United Kingdom subreddit</a> acts as a general hub for related topics, notably including a list of smaller and more specific related subreddits. This list provides a ‘Places’ section, a collection of local British subreddits, ranging in scale from country level (<code>/r/England</code>), regional (<code>/r/thenorth</code>, <code>/r/Teeside</code>), to cities (<code>/r/Manchester</code>) and small towns (<code>/r/Alnwick</code>). In total there are 213 subreddits that relate to ‘places’ within the United Kingdom<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. For each subreddit, every single historic comment was retrieved using the <a href="https://pushshift.io/">Pushshift</a> Reddit archive <span class="citation" data-cites="baumgartner2020">(<a href="#ref-baumgartner2020" role="doc-biblioref">Baumgartner et al. 2020</a>)</span>. In total 8,282,331 comments were extracted, submitted by 490,535 unique users, between 2011-01-01 and 2022-04-17.</p>
+</div>
+</div>
+<p>We extracted and geolocated all place names in this collection of comments using a custom-built geoparsing pipeline. To identify place names, we used a BERT transformer-based NER model trained on the WNUT 2017 dataset <span class="citation" data-cites="derczynski2017">(<a href="#ref-derczynski2017" role="doc-biblioref">Derczynski et al. 2017</a>)</span>, available on the <a href="https://huggingface.co/cjber/reddit-ner-place_names">HuggingFace Model Hub</a>. We then implemented a disambiguation methodology using contextual place names and two gazetteers to geolocate place names; <a href="https://www.ordnancesurvey.co.uk/business-government/products/open-map-names">OS Open Names</a> and ‘natural’ location types from the <a href="https://gazetteer.org.uk/">Gazetteer of British Place Names</a>. Processed comments consist of a collection of geolocated place names, alongside their natural language context sentence.</p>
+<p>From this dataset, we retained any location mentioned by over 50 unique authors and in over 1,000 comments. For each location we then took a random sample of 1,000 comments, ensuring each was represented equally, while also reducing the computational load of future processing.</p>
+<div class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<p>This left {subset[‘word’]:,} total unique locations.</p>
+</div>
+</div>
+<section id="similarity-of-regional-corpora" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="similarity-of-regional-corpora"><span class="header-section-number">2.1</span> Similarity of regional corpora</h2>
+<p>Comparing the similarity between two or more distinct texts first relies on an appropriate method for processing the text into a numerical format. For each location we obtained a corpus of comments, consisting of sentences where each location is mentioned. These were then processed into a single vector, reflecting the semantic information attributed with locations. Typically, a TF-IDF approach is used to generate document embeddings <span class="citation" data-cites="daniel2007">(<a href="#ref-daniel2007" role="doc-biblioref">Daniel and James H 2007</a>)</span>, however we found comparative analysis between embeddings did not always provide insightful information. Each vector shared similar properties, giving cosine similarities which did not result in any distinct variation between locations. This is likely a problem with the language between locations sharing similar properties, meaning the more nuanced semantic information is not captured through a TF-IDF method.</p>
+<p>We therefore extracted embeddings from a deep neural network called a transformer. Unlike TF-IDF or simpler neural network models, transformers are able to use contextual information to generate word embeddings, meaning the same word in two different contexts will not share the exact same vector, capturing different embedded semantic information <span class="citation" data-cites="vaswani2017">(<a href="#ref-vaswani2017" role="doc-biblioref">Vaswani et al. 2017</a>)</span>. Additionally, transformers are <em>pre-trained</em> on a large corpus of text, meaning general information regarding the English language is already embedded within the model, allowing for improved understanding of semantic information. These core features mean that embeddings generated from transformers are likely to capture information that allows for more the accurate comparative analysis. We generated embeddings using the <code>all-mpnet-base-v2</code> model from the <code>sentence-transformers</code> library in Python <span class="citation" data-cites="reimers2019">(<a href="#ref-reimers2019" role="doc-biblioref">Reimers and Gurevych 2019</a>)</span>. Unlike a standard ‘BERT’-like transformer, this library implements modifications to base models that more appropriately captures semantic information in their output embeddings.</p>
+<p>Before calculating embeddings we first masked every mention of a location with a generic token ‘PLACE’, this ensured that when analysing embeddings, no explicit geographic information was captured accidentally. For example, Manchester and Liverpool may mention matching locations frequently in each of their comments because they are geographically close. To both remove noise and reduce the computational requirements for this work, only locations with over 10,000 unique mentions were kept, from these a random sample of 1,000 comments were selected for each. Once embeddings were generated for every comment in each city corpus, the mean for each corpus was generated, giving a vector 768 decimal values for each city.</p>
+<p>With a single vector for each selected location, we first calculated K-Means clusters to determine whether distinct groupings of locations could be identified across the UK. To visualise these clusters we used a PCA decomposition to reduce the dimensionality from 768 down to 2 dimensions. Finally, we calculated the cosine similarity between each and every location vector.</p>
+</section>
+<section id="explainability-of-similarity" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="explainability-of-similarity"><span class="header-section-number">2.2</span> Explainability of similarity</h2>
+<p>To generate explainable characteristics of the semantic information relating to each region, we identified broad topics found within comments.</p>
+</section>
+</section>
+<section id="results-discussion" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Results &amp; Discussion</h1>
+<div class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div id="tbl-sum" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Table&nbsp;1: Summary</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">RGN21NM</th>
+<th style="text-align: left;">masked</th>
+<th style="text-align: left;">unique_words</th>
+<th style="text-align: left;">word_count</th>
+<th style="text-align: right;">places</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">London</td>
+<td style="text-align: left;">67,530</td>
+<td style="text-align: left;">186,851</td>
+<td style="text-align: left;">5,781,967</td>
+<td style="text-align: right;">97</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">North West</td>
+<td style="text-align: left;">21,113</td>
+<td style="text-align: left;">92,869</td>
+<td style="text-align: left;">1,903,740</td>
+<td style="text-align: right;">70</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">South East</td>
+<td style="text-align: left;">27,527</td>
+<td style="text-align: left;">112,799</td>
+<td style="text-align: left;">2,359,251</td>
+<td style="text-align: right;">68</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">South West</td>
+<td style="text-align: left;">16,547</td>
+<td style="text-align: left;">78,354</td>
+<td style="text-align: left;">1,386,642</td>
+<td style="text-align: right;">68</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Scotland</td>
+<td style="text-align: left;">40,704</td>
+<td style="text-align: left;">151,411</td>
+<td style="text-align: left;">3,832,534</td>
+<td style="text-align: right;">65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yorkshire and The Humber</td>
+<td style="text-align: left;">8,617</td>
+<td style="text-align: left;">52,661</td>
+<td style="text-align: left;">742,014</td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">West Midlands</td>
+<td style="text-align: left;">5,335</td>
+<td style="text-align: left;">37,965</td>
+<td style="text-align: left;">534,168</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">East of England</td>
+<td style="text-align: left;">9,227</td>
+<td style="text-align: left;">54,858</td>
+<td style="text-align: left;">800,162</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">East Midlands</td>
+<td style="text-align: left;">6,223</td>
+<td style="text-align: left;">41,132</td>
+<td style="text-align: left;">564,779</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">North East</td>
+<td style="text-align: left;">6,662</td>
+<td style="text-align: left;">44,341</td>
+<td style="text-align: left;">713,653</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wales</td>
+<td style="text-align: left;">2,411</td>
+<td style="text-align: left;">21,442</td>
+<td style="text-align: left;">201,335</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Total</td>
+<td style="text-align: left;">203,896</td>
+<td style="text-align: left;">441,609</td>
+<td style="text-align: left;">18,820,245</td>
+<td style="text-align: right;">246</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>?@fig-pca</strong> gives K Means clusters for transformer embeddings decomposed into two dimensions with <span class="math inline">\(k=5\)</span>. These Clusters show corpora that share similar semantic properties, however, it is worth noting that while points that are closer together likely indicate increased similarity, the position of these points reflect PCA decomposed values, which capture less information compared with the clusters calculated on non-decomposed vectors. Notably London appears as a single value in a cluster, suggesting the corpus associated with the capital of the UK is semantically distinct from the rest of the country. There is also a single cluster associated with the four Scottish cities considered in our study (Cluster 1), as well as a cluster for Cambridge and Oxford (Cluster 5). <strong>?@fig-pca</strong> (B) reveals that clusters do broadly appear to reflect distance-restricted geographic properties, while also capturing some divergences from this, with locations like London, Newcastle, Bristol and Brighton geographically distant from locations they share clusters with.</p>
+<div class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div id="fig-heatmap" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="main_files/figure-html/fig-heatmap-output-1.png" width="957" height="872" class="figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Cosine similarity between each and every location related transformer vector embedding. Values scaled between 0 and 1. Green highlights indicate the highest value in each row, while red indicates the lowest value in each row.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>With our high dimensional transformer embeddings we compare the cosine similarity between them on <a href="#fig-heatmap">Figure&nbsp;1</a>. The highest and lowest similarity score for each location is highlighted in red and green respectively. As with <strong>?@fig-pca</strong>, corpora in Scottish cities appear to largely share similarities, with Glasgow and Edinburgh sharing their highest similarity values. The city with the lowest similarity to the most other locations is Oxford, which shares low values with cities in Scotland, as well as Liverpool and Manchester. London again stands out, with overall very low similarities with all other cities, but the highest similarity with Manchester.</p>
+<section id="topic-modelling" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="topic-modelling"><span class="header-section-number">3.1</span> Topic Modelling</h2>
+<div class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div id="tbl-topics" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Table&nbsp;2: Summary</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">RGN21NM</th>
+<th style="text-align: left;">true_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">South East</td>
+<td style="text-align: left;">[Ryanair</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Easyje</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">t], [5G,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Broadban</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">d], [Bre</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">weries,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Brewpubs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Taxis,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Cabbies]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Chris</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">tmases,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Festivit</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ies]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">East of England</td>
+<td style="text-align: left;">[Ferries</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Shipbu</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ilding],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Steakho</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">use, Ste</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">akhouses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Burger,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Burgers]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Ryana</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ir, Easy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">jet], [C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ommuted,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Commutes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">London</td>
+<td style="text-align: left;">[Breweri</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">es, Brew</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">pubs], [</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Hounslow</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Croydo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">n],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Strike,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Strikes]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Gentr</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ificatio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">n, Gentr</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ifying],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Bombay,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Curries]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wales</td>
+<td style="text-align: left;">[Welshne</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ss, Glam</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">organ],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Recycli</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ng, Recy</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cle], [R</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">acially,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Racism],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Hooliga</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">nism, Ho</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">oligans]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Range</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">rswest,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Brentfor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">d]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">North East</td>
+<td style="text-align: left;">[Separat</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ism, Sep</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">aratists</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Dorms,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Campuses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [Brew</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">eries, B</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">rewpubs]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Clini</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cs, Ukme</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">dicalcan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">nabis],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Commute</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">d, Commu</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">tes]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Yorkshire and The Humber</td>
+<td style="text-align: left;">[Dorms,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Campuses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [Raci</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ally,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Racism],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Barbers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Barber</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">hood],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[5G, Bro</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">adband],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Malls,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Shopsthi</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">s]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">North West</td>
+<td style="text-align: left;">[Dorms,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Campuses</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [Rang</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">erswest,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Brentfor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">d], [Ten</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ancy,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Tenant],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Recycli</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ng, Recy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cle], [R</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">acially,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Racism]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">West Midlands</td>
+<td style="text-align: left;">[Dorms,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Campuses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [Morr</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">isons, G</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">roceries</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Bands,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Chipfest</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [5G,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Broadban</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">d],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Bombay,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Curries]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Scotland</td>
+<td style="text-align: left;">[Itinera</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ry, Dayt</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">rips], [</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Hooligan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ism, Hoo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ligans],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Recycli</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ng, Recy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cle], [M</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">orrisons</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Grocer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ies], [B</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">reweries</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, Brewpu</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">bs]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">South West</td>
+<td style="text-align: left;">[Breweri</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">es, Brew</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">pubs], [</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Barbers,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Barberho</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">od],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Bombay,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Curries]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Racia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">lly,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Racism],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Gyms,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Gymbox]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">East Midlands</td>
+<td style="text-align: left;">[Rangers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">west, Br</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">entford]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">, [Vacan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">cies,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Hiring],</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Sociali</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">sing, Me</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">etups],</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">[Dorms,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Campuses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">], [Raci</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ally,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Racism]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><a href="#fig-topic-embeddings">Figure&nbsp;2</a> shows the embeddings relating to each topic selected. Notably topic 0 seems to be quite non-specific, so we remove this topic from our study.</p>
+<div class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div id="fig-topic-embeddings" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="main_files/figure-html/fig-topic-embeddings-output-1.png" width="478" height="408" class="figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;2: Cosine similarity between each and every location related transformer vector embedding. Values scaled between 0 and 1. Green highlights indicate the highest value in each row, while red indicates the lowest value in each row.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display">
+<p><img src="main_files/figure-html/cell-10-output-1.png" width="867" height="682"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Conclusion</h1>
+<p>Our paper demonstrates the ability to compare Reddit comments relating to cities across the UK, using document embeddings generated from a transformer neural network. Instead of focussing on physical interactions between people or social media interactions, our work identifies relationships between cities through their semantic footprint, and analysing each corpus computationally allows for direct comparisons between cities through clustering and cosine similarity.</p>
+<p>Our analysis reveals distinct clusters which largely reflect geographic proximity of locations, however, interesting deviations from proximity do emerge. Oxford and Cambridge are both clustered and share a high cosine similarity, but generate the lowest similarity with many other locations in the UK, including London. London in particular appears distinct from the rest of the UK, while cities that are not geographically close exhibit clustering and high similarity, such as Liverpool and Newcastle.</p>
+<p>The information generated through our work presents an alternative view of relationships between cities that are not captured by existing data sources, all of which rely on explicit geographic coordinate information. Instead, we build similarities and clusters directly from the semantic information that exists within their respective corpora. Unlike traditional data, which captures objective social interactions between regions, the deviations from the restriction of geographic distance between several cities in our work appears to reflect the more subjective language that shapes the cultural and perceived identity of regions, and the relationships between them.</p>
+<p>While our work enables the direct numerical comparison between city-based corpora, it cannot explain the similarities and dissimilarities between them. Additional work may explore the use of topic-modelling to identify shared topics between locations, and differences in the sentiment towards these topics may explain dissimilarity.</p>
+</section>
+<section id="references" class="level1 unnumbered">
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-arthur2019" class="csl-entry" role="listitem">
+Arthur, Rudy, and Hywel T. P. Williams. 2019. <span>“The Human Geography of <span>Twitter</span>: <span>Quantifying</span> Regional Identity and Inter-Region Communication in <span>England</span> and <span>Wales</span>.”</span> Edited by Emilio Ferrara. <em>PLOS ONE</em> 14 (4): e0214466. doi:<a href="https://doi.org/10.1371/journal.pone.0214466">10.1371/journal.pone.0214466</a>.
+</div>
+<div id="ref-baumgartner2020" class="csl-entry" role="listitem">
+Baumgartner, Jason, Savvas Zannettou, Brian Keegan, Megan Squire, and Jeremy Blackburn. 2020. <span>“The <span>Pushshift Reddit Dataset</span>.”</span> <span>arXiv</span>. <a href="https://arxiv.org/abs/arXiv:2001.08435">https://arxiv.org/abs/arXiv:2001.08435</a>.
+</div>
+<div id="ref-daniel2007" class="csl-entry" role="listitem">
+Daniel, Jurafsky, and Martin James H. 2007. <em>Speech and Language Processing: <span>An</span> Introduction to Natural Language Processing, Computational Linguistics, and Speech Recognition</em>. <span>prentice hall</span>.
+</div>
+<div id="ref-derczynski2017" class="csl-entry" role="listitem">
+Derczynski, Leon, Eric Nichols, Marieke van Erp, and Nut Limsopatham. 2017. <span>“Results of the <span>WNUT2017 Shared Task</span> on <span>Novel</span> and <span>Emerging Entity Recognition</span>.”</span> In <em>Proceedings of the 3rd <span>Workshop</span> on <span class="nocase">Noisy User-generated Text</span></em>, 140–47. <span>Copenhagen, Denmark</span>: <span>Association for Computational Linguistics</span>. doi:<a href="https://doi.org/10.18653/v1/W17-4418">10.18653/v1/W17-4418</a>.
+</div>
+<div id="ref-lengyel2015" class="csl-entry" role="listitem">
+Lengyel, Balázs, Attila Varga, Bence Ságvári, Ákos Jakobi, and János Kertész. 2015. <span>“Geographies of an <span>Online Social Network</span>.”</span> Edited by Wei-Xing Zhou. <em>PLOS ONE</em> 10 (9): e0137248. doi:<a href="https://doi.org/10.1371/journal.pone.0137248">10.1371/journal.pone.0137248</a>.
+</div>
+<div id="ref-murphy2019" class="csl-entry" role="listitem">
+Murphy, Nicole. 2019. <span>“Reddit’s 2019 <span>Year</span> in <span>Review</span> - <span>Upvoted</span>.”</span> https://www.redditinc.com/blog/reddits-2019-year-in-review/#content.
+</div>
+<div id="ref-rae2009" class="csl-entry" role="listitem">
+Rae, Alasdair. 2009. <span>“From Spatial Interaction Data to Spatial Interaction Information? <span>Geovisualisation</span> and Spatial Structures of Migration from the 2001 <span>UK</span> Census.”</span> <em>Computers, Environment and Urban Systems</em> 33 (3): 161–78. doi:<a href="https://doi.org/10.1016/j.compenvurbsys.2009.01.007">10.1016/j.compenvurbsys.2009.01.007</a>.
+</div>
+<div id="ref-ratti2010" class="csl-entry" role="listitem">
+Ratti, Carlo, Stanislav Sobolevsky, Francesco Calabrese, Clio Andris, Jonathan Reades, Mauro Martino, Rob Claxton, and Steven H. Strogatz. 2010. <span>“Redrawing the <span>Map</span> of <span>Great Britain</span> from a <span>Network</span> of <span>Human Interactions</span>.”</span> Edited by Olaf Sporns. <em>PLoS ONE</em> 5 (12): e14248. doi:<a href="https://doi.org/10.1371/journal.pone.0014248">10.1371/journal.pone.0014248</a>.
+</div>
+<div id="ref-reimers2019" class="csl-entry" role="listitem">
+Reimers, Nils, and Iryna Gurevych. 2019. <span>“Sentence-<span>BERT</span>: <span>Sentence Embeddings</span> Using <span>Siamese BERT-Networks</span>.”</span> In <em>Proceedings of the 2019 <span>Conference</span> on <span>Empirical Methods</span> in <span>Natural Language Processing</span> and the 9th <span>International Joint Conference</span> on <span>Natural Language Processing</span> (<span>EMNLP-IJCNLP</span>)</em>, 3980–90. <span>Hong Kong, China</span>: <span>Association for Computational Linguistics</span>. doi:<a href="https://doi.org/10.18653/v1/D19-1410">10.18653/v1/D19-1410</a>.
+</div>
+<div id="ref-sobolevsky2013" class="csl-entry" role="listitem">
+Sobolevsky, Stanislav, Michael Szell, Riccardo Campari, Thomas Couronné, Zbigniew Smoreda, and Carlo Ratti. 2013. <span>“Delineating <span>Geographical Regions</span> with <span>Networks</span> of <span>Human Interactions</span> in an <span>Extensive Set</span> of <span>Countries</span>.”</span> Edited by Yamir Moreno. <em>PLoS ONE</em> 8 (12): e81707. doi:<a href="https://doi.org/10.1371/journal.pone.0081707">10.1371/journal.pone.0081707</a>.
+</div>
+<div id="ref-statista2022" class="csl-entry" role="listitem">
+Statista. 2022. <span>“Most Popular Social Networks Worldwide as of <span>January</span> 2022, Ranked by Number of Monthly Active Users.”</span> <em>Statista</em>. https://www.statista.com/statistics/272014/global-social-networks-ranked-by-number-of-users/.
+</div>
+<div id="ref-titheridge2009" class="csl-entry" role="listitem">
+Titheridge, Helena, Kamalasudhan Achuthan, Roger L. Mackett, and Juliet Solomon. 2009. <span>“Assessing the Extent of Transport Social Exclusion Among the Elderly.”</span> <em>Journal of Transport and Land Use</em> 2 (2). doi:<a href="https://doi.org/10.5198/jtlu.v2i2.44">10.5198/jtlu.v2i2.44</a>.
+</div>
+<div id="ref-vaswani2017" class="csl-entry" role="listitem">
+Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. <span>“Attention <span>Is All You Need</span>.”</span> <em>arXiv:1706.03762 [Cs]</em>, December. <a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>https://www.reddit.com/r/unitedkingdom/wiki/british_subreddits<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

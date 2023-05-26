@@ -1,0 +1,46 @@
+stages:
+  preprocessing:
+    cmd: python -m src.preprocessing
+    frozen: true
+    deps:
+      - src/preprocessing.py
+      - src/common/utils.py
+      - data/processed/exclude.txt
+      - /home/cjber/data/places-2023_04_11.parquet
+      - /home/cjber/data/places_full-2023_04_11.parquet
+      - /home/cjber/data/wales_bdry.gpkg
+      - /home/cjber/data/scot_bdry.gpkg
+    outs:
+      - data/processed/place_regions.parquet
+      - data/processed/places.parquet
+      - data/processed/en_regions.parquet
+  embeddings:
+    cmd: python -m src.embeddings
+    frozen: true
+    deps:
+      - src/embeddings.py
+      - src/common/utils.py
+      - data/processed/exclude.txt
+      - data/processed/places.parquet
+    outs:
+      - data/processed/region_embeddings.parquet
+  zero_shot:
+    cmd: python -m src.zero_shot
+    frozen: true
+    deps:
+      - src/zero_shot.py
+      - src/common/utils.py
+      - data/processed/exclude.txt
+      - data/processed/places.parquet
+    outs:
+      - data/processed/places_zero_shot.parquet
+  paper:
+    cmd: quarto render paper/main.qmd
+    frozen: true
+    deps:
+      - paper/figures
+      - paper/main.qmd
+      - data/processed/places_zero_shot.parquet
+      - data/processed/region_embeddings.parquet
+    outs:
+      - paper/main.pdf

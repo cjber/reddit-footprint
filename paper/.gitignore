@@ -1,0 +1,8 @@
+old
+reviewer_comments.md
+_extensions
+*.xmpdata
+*.tex
+*.abs
+
+/main.pdf

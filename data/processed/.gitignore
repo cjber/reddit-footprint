@@ -1,0 +1,5 @@
+/region_embeddings.parquet
+/place_regions.parquet
+/places.parquet
+/en_regions.parquet
+/places_zero_shot.parquet
