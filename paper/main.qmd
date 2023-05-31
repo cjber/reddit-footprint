@@ -1,5 +1,5 @@
 ---
-title: "Regional Identity and Cohesion Identified within the UK through Reddit Comments"
+title: "Regional Identity and Cohesion Identified in Britain through Reddit Comments"
 execute:
     echo: false
 author:
@@ -28,7 +28,7 @@ project:
 
 # Abstract
 
-Both physical and online social interactions broadly decline in strength with geographic distance, and intra-community interaction strength often appears to correlate with pre-defined geographic administrative boundaries. These factors suggest that there are strong regional influences on social interactions, particularly given online social interactions are not directly restricted by distance. Regional identities between constituent countries within the UK are frequently studied from the context of structured surveys and census data, with language seen as a defining feature of these identities. In our work, we consider the exploration of semantic interaction strength, building a comparative analysis of corpora related to regions within the UK, determining shared semantic similarities between them. Building on this analysis, we establish the strength of regional Scottish, Welsh, English, and British identities within each region, using emergent properties of a large language model. We find that distinct groups emerge particularly in the South East and North East of England, while Scottish regional identity appears to be more distinct from England and Britishness compared with the Welsh identity.
+Physical and online social interactions broadly decline in strength with geographic distance, and intra-community interaction strength often appears to correlate with pre-defined geographic administrative boundaries. These factors suggest that there are strong regional influences on social interactions, particularly given online social interactions are not directly restricted by distance. Regional identities between constituent countries within the UK are frequently studied from the context of structured surveys and census data, with language seen as a defining feature of these identities. In our work, we consider the exploration of semantic interaction strength, building a comparative analysis of corpora related to regions within the UK, determining shared semantic similarities between them. Building on this analysis, we establish the strength of regional Scottish, Welsh, English, and British identities within each region, using emergent properties of a large language model. We find that distinct groups emerge particularly in the South East and North East of England, while Scottish regional identity appears to be more distinct from England and Britishness compared with the Welsh identity.
 
 ```{python}
 import warnings
@@ -60,10 +60,10 @@ Social interaction is typically studied in the context of mobility, using data s
 
 Social media also presents rich semantic information regarding locations through text associated with geotagged social media posts. Comparative analysis of corpora associated with geotagged locations similarly exhibit regionality [@yin2017a]; for example, tweets from the North East of England are statistically different compared with the South [@arthur2019].
 
-In the context of political science, regional identities have been well studies through the use of structured survey or census data [@griffiths2022;@haesly2005;refs], which may provide explanation into the
-inherent geographic restrictions that still appear with social media interactions. Language itself can be a strong indicator of regional identity [@haesly2005;refs], and past work has considered the regional variation in language that exists within social media networks [@huang2016;@goncalves2014;@perez2019].
+In the context of political science, regional identities have been well studied through the use of structured survey or census data [@griffiths2022;@haesly2005;@llamas2014], which may provide explanation into the
+inherent geographic restrictions that still appear with social media interactions. Language itself can be a strong indicator of regional identity [@haesly2005;@llamas2009;@llamas2014], and past work has considered the regional variation in language that exists within social media networks [@huang2016;@goncalves2014;@perez2019;@arthur2019].
 
-Our paper explores the similarity of corpora with respect to locational mentions from data taken directly from text, without relying on geotagged metadata. This approach offers an alternative perspective for the analysis of social interaction, built directly from the semantic information associated with locations, rather than the location associated with social media users themselves. Collective semantic information from social media embeds the regional identity of locations across a continuous spectrum, allowing for the direct comparison between these identities and their relationships.
+Our paper explores the similarity of corpora with respect to locational mentions taken directly from social media text, without relying on geotagged metadata. This approach offers an alternative perspective for the analysis of social interaction, built directly from the semantic information associated with locations, rather than the location associated with social media users themselves. Collective semantic information from social media embeds the regional identity of locations across a continuous spectrum, allowing for the direct comparison between these identities and their relationships. Additionally, we consider that regional identities may be identified from text, and extracted through the use of emergent capabilities of large language models.
 
 # Literature Review
 
@@ -77,17 +77,15 @@ The presence of these two geographic restrictions in social interactions in tele
 
 The concept of regional identities within populations has been well studied from the context of political research [@griffiths2022], particularly in relation to the shared national identity that becomes apparent within constituent countries in the United Kingdom [@haesly2005]. Methods for quantifying broad perspectives of regional identities have typically focussed on the use of surveys, questioning individuals beliefs that they belong to a particular nation.
 
-When considering both Scottish and Welsh identities, @haesly2005 observe that in both cases, respondents display strong national pride and emphasise their distinction from England. The overall level of pride however was found to be stronger in Scotland, rooted in the richer history that creates a more distinct nation compared with Wales. Other studies have found that people from North East England exhibit a strong sense of regional identity, distinct from the rest of the country [@middleton2008;@nayak2016]. The strength of national identities may also be quantified through the use of Relative Territorial Identity (RTI) surveys, which asks respondents to rank their national identities on a scale ranging from 'not at all' to 'very strongly' [@griffiths2022]. @henderson2021 identify English nationalism by questioning a persons beliefs whether they are British or English. Similarly, a strong sense of Scottish identity can be observed by questioning whether a person feels more Scottish than British [@carman2014].
+When considering both Scottish and Welsh identities, @haesly2005 observe that in both cases, respondents display strong national pride and emphasise their distinction from England. The overall level of pride however was found to be stronger in Scotland, rooted in the richer history that creates a more distinct nation compared with Wales. Other studies have also found that people from North East England exhibit a strong sense of regional identity and emphasise their distinction from the rest of England, built on a historical sense of regional pride [@middleton2008;@nayak2016]. The strength of national identities may be quantified through the use of Relative Territorial Identity (RTI) surveys, which asks respondents to rank their national identities on a scale ranging from 'not at all' to 'very strongly' [@griffiths2022]. @henderson2021 identify English nationalism by questioning a persons beliefs whether they are British or English. Similarly, work has identified a strong sense of Scottish identity from questioning whether a person feels more Scottish than British [@carman2014].
 
-NOTE: Many works note the importance of language in defining a regional identity [@haesly2005;refs]...
+Many works emphasise the importance of language in defining regional identities [@haesly2005;@llamas2009;@llamas2014]. The Scottish identity is strongly associated with a sub-dialect of English known as 'Scottish English' which includes words and phrases that are uncommon outside of Scotland [@stuart-smith2008]. Language in the North East of England is also considered a defining feature of its regional identity, despite having no formal language [@nayak2016].
 
-NOTE: See [@huang2016] for linguistic variation stuff with Twitter data - link with rest. [@lee2007] - geographic text stuff, [@goncalves2014] - diatopic variation in geotagged micro blogs.
+Regional variations in linguistic characteristics are often quantified from a statistical lexical perspective, identifying regional differences in common words on Twitter [@huang2016;@eisenstein2014;@goncalves2014;@goncalves2014;@arthur2019], or identifying dialects from active participation methods [@clopper2016]. @arthur2019 for example examined lexicons associated with cohesive regions in England and Wales generated from an analysis of social networks, establishing a cosine similarity measure between them. They found that the Welsh lexicon appeared the most dissimilar to all other regions, while Northern English regions were more similar to each other compared with Southern regions.
 
-NOTE: [@perez2019] - regionalisms in social media posts.
+In our work we aim to generate a measure of regional identity through an examination of text associated with place names extracted from comments on the social media website Reddit. While past work has examined cohesion within regions from the perspective of social media networks, or by examining lexicons associated with geotagged social media messages, we examine regional variations derived from text associated with directly embedded place names. Unlike using geotags, which mean linguistic features relate solely to a person posting from within a location, our data captures any comment than mentions a location in context; both from people living within the mentioned location, and people from outside mentioning them. This means that we capture broad opinionated regional identities, built from a variety of contexts, rather than from a just from the point of a view of examining the dialect of a location.
 
-NOTE: Slightly more detail about RTI; scottish identity stronger than welsh? British stronger than English?
-
-NOTE: Follow with
+Instead of using lexical approaches, we consider the ability of large language models to embed contextual semantic information from text when generating high dimensional text representations, which is not possible with count-based lexicons. We believe this property is important in this research, given the meaning of words, especially in informal, region specific language is highly context dependent.
 
 Aims:
 
@@ -97,7 +95,7 @@ Aims:
 
 # Methodology
 
-The following section gives an overview of our data source and the data processing methodology used in our paper. All code, analysis, and data are available on our [DagsHub repository](https://dagshub.com/cjber/reddit-geoext).
+The following section gives an overview of our data source and the data processing methodology used in our paper. All code, analysis, and data are available on our [GitHub repository](https://github.com/cjber/reddit-footprint).
 
 ```{python}
 all_comments = (
@@ -131,7 +129,7 @@ display(
 
 We extracted and geolocated all place names in this collection of comments using a custom-built geoparsing pipeline. To identify place names, we used a BERT transformer-based NER model trained on the WNUT 2017 dataset [@derczynski2017], available on the [HuggingFace Model Hub](https://huggingface.co/cjber/reddit-ner-place_names). We then implemented a disambiguation methodology using contextual place names and two gazetteers to geolocate place names; [OS Open Names](https://www.ordnancesurvey.co.uk/business-government/products/open-map-names) and 'natural' location types from the [Gazetteer of British Place Names](https://gazetteer.org.uk/). Processed comments consist of a collection of geolocated place names, alongside their natural language context sentence.
 
-From this dataset, we retained any location mentioned by over 250 unique authors and with more than 500 context words. For each location we then took a random sample of 10,000 comments, ensuring each was represented equally, while also reducing the computational load of future processing.
+From this dataset, we retained any location mentioned by over 250 unique authors and with more than 500 context words. For each location we then took a random sample of 5,000 comments, ensuring each was represented equally, while also reducing the computational load of future processing.
 
 ## Similarity of Regional Corpora
 
@@ -145,9 +143,9 @@ With a single vector for each region, we first calculated K-Means clusters to de
 
 ## Zero-Shot regional identities
 
-Building on the concept of relative territorial identity measures, we construct a methodology to examine relative regional identity strength based on the semantic information embedded within comments. Semantic information is expected to capture both explicit information contributed by users; for example stating 'London is a British city', in addition to implicit semantic information that exists within language. For example the phrase 'bonnie Scotland' may suggest a strong regional identity due to the inclusion of Scottish slang^[See 'Scottish English' or 'Scots' [@stuart-smith2008].
+Building on the concept of relative territorial identity measures, we construct a methodology to examine relative regional identity strength based on the semantic information embedded within comments. Semantic information is expected to capture both explicit information contributed by users; for example stating 'London is a British city', in addition to implicit semantic information that exists within language. For example the phrase 'bonnie Scotland' may suggest a strong regional identity due to the inclusion of Scottish slang^[See 'Scottish English' or 'Scots'; [@stuart-smith2008]].
 
-To identify regional identities through semantic information, we build on the emergent properties of large language models, with enable a task known as 'Zero-Shot Classification'. This allows models to predict a class that was not seen during training, by generating a prompt that contains the labels required. For our task an example prompt may be constructed as follows:
+To identify regional identities through semantic information, we build on the emergent properties of large language models, which enable a task known as 'Zero-Shot Classification'. This allows models to predict a class that was not seen during training, by generating a prompt that contains the labels required. For our task an example prompt may be constructed as follows:
 
 ```
 Classify the following input text into one of the following four categories:
@@ -168,7 +166,17 @@ The output would then be given as a sequence of confidence values for each label
 
 # Results & Discussion
 
-Table \ref{tbl-sum} gives an overview of the number of comments, word count and number of places that were identified within each administrative region of the UK. Our study concerns a subset of the full Reddit comment dataset, only considering place mentioned by more than 200 authors, leaving a total of XXX,XXX comments containing place names.
+```{python}
+num_comments = places.unique("text").n_unique()
+display(
+    Markdown(
+        rf"""
+Table \ref{{tbl-sum}} gives an overview of the number of comments, word count and number of places that were identified within each administrative region of the UK. Our study concerns a subset of the full Reddit comment dataset, only considering place mentioned by more than 250 authors, and subsetting each location to a maximum of 5,000 mentions leaving a total of {num_comments:,} comments containing place names.
+
+"""
+    )
+)
+```
 
 ```{python}
 # | output: asis
@@ -186,7 +194,7 @@ print(
 ```
 
 ```{python}
-# | label: fig-pca
+# | label: fig-clusters
 # | fig-cap: "Average transformer vector associated with each location corpus coloured by K Means clusters where $K=5$. (A) PCA decomposed into 2 dimensions. (B) Geographic location of clusters."
 
 from paper.figures import plot_place_vectors
@@ -195,7 +203,7 @@ plot_place_vectors(region_embeddings, en_regions, basemap)
 plt.show()
 ```
 
-@fig-pca gives K Means clusters for transformer embeddings decomposed into two dimensions with $k=5$. These Clusters indicate regional corpora that share similar semantic properties. it is worth noting however, that while points that are closer together likely indicate increased similarity, the position of these points reflect PCA decomposed values, which capture less information compared with the clusters calculated on non-decomposed vectors. Notably Scotland, the North East, and West Midlands each appear as single values in unique clusters, suggesting semantically distinct corpora from the rest of the country. There are two further clusters which encompass the South East of England (Cluster 1), and the rest of England and Wales (Cluster 3). @fig-pca (B) reveals that clusters do broadly appear to reflect distance-restricted geographic properties, while also capturing some divergences from this where neighbouring administrative regions appear in distinct clusters.
+@fig-clusters gives K Means clusters for transformer embeddings decomposed into two dimensions with $k=5$. These Clusters indicate regional corpora that share similar semantic properties. Notably Scotland, the North East, and West Midlands each appear as single values in unique clusters, suggesting semantically distinct corpora from the rest of the country. There are two further clusters which encompass the South East of England (Cluster 1), and the rest of England and Wales (Cluster 3). @fig-clusters (B) reveals that clusters do broadly appear to reflect distance-restricted geographic properties, while also capturing some divergences from this where neighbouring administrative regions appear in distinct clusters.
 
 ```{python}
 # | label: fig-similarity
@@ -207,15 +215,21 @@ plot_similarity(region_embeddings)
 plt.show()
 ```
 
-With our high dimensional transformer embeddings we compare the cosine similarity between them on @fig-similarity. The highest and lowest similarity score for each location is highlighted in red and green respectively. As with @fig-pca, corpora in Scottish cities appear to largely share similarities, with Glasgow and Edinburgh sharing their highest similarity values. The city with the lowest similarity to the most other locations is Oxford, which shares low values with cities in Scotland, as well as Liverpool and Manchester. London again stands out, with overall very low similarities with all other cities, but the highest similarity with Manchester.
+When we compare the cosine similarity of the mean embeddings relating to each region on @fig-similarity, we can more directly observe the intra-region cohesions. The North West has the overall highest levels of cosine similarity with each other region, with comparatively high similarity with each other region. Lower similarities occur in regions like Wales, the Midlands, and Yorkshire, generally caused by lower overall similarities with London, the South East and East of England. In particular, the South Eastern region of England (Cluster 1 on @fig-clusters), has low overall similarity with all other regions, excluding the North West.
 
-## Identities
+With respect Wales we can see that despite having a weak similarity to the South East, Wales appears to share higher similarities with the rest of England. This is however not the case with Scotland, where similarities are overall lower with England. Finally, the North East has the lowest overall similarity of any region in Britain, driven primarily by the very low similarity with the South East of England cluster. Interestingly, despite proximity to Scotland, unlike the North West, the North East shares a very low similarity.
 
-@fig-boxplot shows the distribution of regional identities identified through our zero-shot classification methodology.
+With our high dimensional transformer embeddings we compare the cosine similarity between them on @fig-similarity. The highest and lowest similarity score for each location is highlighted in red and green respectively. As with @fig-clusters, corpora in Scottish cities appear to largely share similarities, with Glasgow and Edinburgh sharing their highest similarity values. The city with the lowest similarity to the most other locations is Oxford, which shares low values with cities in Scotland, as well as Liverpool and Manchester. London again stands out, with overall very low similarities with all other cities, but the highest similarity with Manchester.
+
+## Regional Identities
+
+@fig-identity shows the distribution of regional identities identified through our zero-shot classification methodology. Across each region, the 'English' identity is always lower than 'British', suggesting that regions within England typically identify more strongly with the United Kingdom than solely England. Unlike English regions however, both Scotland and Wales identify most strongly with their respective nationalities. While the Welsh identity is reasonably weak, below the weakest British identity in the UK, the Scottish identity is by far the most strong of any identity across every region.
+
+These results mirror those of past work considering regional identities through the use of structured surveys. Scottish and Welsh identities are both considered stronger than a British identity within these countries, but the Scottish identity is much stronger than the Welsh identity.
 
 ```{python}
-# | label: fig-boxplot
-# | fig-cap: "Zero Shot classification of each corpus into regional identities; [B]ritish, [E]nglish, [S]cottish, [W]elsh. Values show mean confidence value across each comment. Descending order by [B]ritish confidence."
+# | label: fig-identity
+# | fig-cap: "Zero Shot classification of each corpus into regional identities; [B]ritish, [E]nglish, [S]cottish, [W]elsh. Values show mean confidence value across each comment, lines indicate 99% confidence intervals. Descending order by [B]ritish confidence."
 
 from paper.figures import plot_zero_shot
 
