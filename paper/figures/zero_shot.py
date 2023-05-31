@@ -5,14 +5,14 @@ from seaborn import axes_style
 
 from src.common.utils import EXCLUDE, Paths
 
+zero_shot_path = Paths.PROCESSED / "places_zero_shot.parquet"
+
 
 def plot_zero_shot(zero_shot_path):
     places = (
         pl.read_parquet(zero_shot_path)
+        .filter((pl.col("word").is_in(EXCLUDE).is_not()))
         .unique(["text", "scores"])
-        .filter(
-            (pl.col("word").is_in(EXCLUDE).is_not())  # & (pl.col("word").is_in(CITIES))
-        )
         # some false locations
         .with_columns(
             RGN21NM=pl.when(
@@ -21,17 +21,16 @@ def plot_zero_shot(zero_shot_path):
             .then("Scotland")
             .otherwise(pl.col("RGN21NM"))
         )
-    )
-
-    places = places.with_columns(
-        pl.when(pl.col("labels") == "British")
-        .then(pl.col("scores").mean().over(["RGN21NM", "labels"]))
-        .alias("sort_order")
-    ).sort("sort_order", descending=True)
-
-    places = places.with_columns(
-        pl.col("labels").map_dict(
-            {"English": "E", "British": "B", "Scottish": "S", "Welsh": "W"}
+        .with_columns(
+            pl.when(pl.col("labels") == "British")
+            .then(pl.col("scores").mean().over(["RGN21NM", "labels"]))
+            .alias("sort_order")
+        )
+        .sort("sort_order", descending=True)
+        .with_columns(
+            pl.col("labels").map_dict(
+                {"English": "E", "British": "B", "Scottish": "S", "Welsh": "W"}
+            ),
         )
     )
 
@@ -52,29 +51,33 @@ def plot_zero_shot(zero_shot_path):
         color="grey",
         linestyle="dashed",
     )
-    (
+    _ = (
         so.Plot(
-            places.to_pandas(), x="scores", y="RGN21NM", text="labels", color="labels"
+            places.to_pandas(),
+            x="scores",
+            y="RGN21NM",
+            text="labels",
+            color="labels",
         )
         .add(
             so.Text({"fontweight": "bold"}, offset=0),
             so.Agg(),
         )
+        .add(
+            so.Range(),
+            so.Est(errorbar="ci", seed=0),
+            so.Shift(y=0.3),
+        )
+        .scale()
         .label(x="", y="")
         .theme({**axes_style("ticks")})
         .on(ax)
         .layout(engine="constrained")
-        .show()
+        .plot()
     )
+    fig.legends = []
+    _.show()
 
 
 if __name__ == "__main__":
-    plot_zero_shot(Paths.PROCESSED / "places_zero_shot.parquet")
-
-    places.filter(
-        (pl.col("labels") == "S") & (pl.col("RGN21NM") == "Yorkshire and The Humber")
-    ).sort("scores", descending=True)["text"][1]
-
-    places.filter((pl.col("word") == "portsmouth")).unique(subset=["easting"])[
-        "author_count"
-    ]
+    plot_zero_shot(Paths.PROCESSED / "places_zero_shot-tmp.parquet")
