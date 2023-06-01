@@ -18,9 +18,7 @@ def generate_embeddings(places):
 
 
 if __name__ == "__main__":
-    places = pl.read_parquet(Paths.PROCESSED / "places.parquet").sample(
-        10_000, seed=SEED
-    )
+    places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
     output = generate_embeddings(places)
 
     embeddings = []
