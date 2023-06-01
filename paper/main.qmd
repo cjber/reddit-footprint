@@ -2,6 +2,7 @@
 title: "Regional Identity and Cohesion Identified in Britain through Reddit Comments"
 execute:
     echo: false
+    warning: false
 author:
   - name: Cillian Berragan
     affiliations:
@@ -22,8 +23,8 @@ keywords:
 bibliography: main.bib
 filters:
     - abstract-section
-project:
-    execute-dir: $PWD
+# project:
+#     execute-dir: $PWD
 ---
 
 # Abstract
@@ -58,7 +59,7 @@ region_embeddings = gpd.GeoDataFrame(region_embeddings.merge(en_regions, on="RGN
 
 Social interaction is typically studied in the context of mobility, using data sources like Census or transport records, where physical movement is restricted by distance and ease of connectivity between two locations [@rae2009;@titheridge2009]. In contrast to this, social interaction has also been studied using phone call data [@sobolevsky2013], and social media networks [@lengyel2015], where the spatial and temporal bounds of connectivity between two locations does not restrict interactions. Despite this however, many studies have found that geographic identities within communities still persist in these networks, with interaction strength influenced by both the geographic distance between them and their regional identity [@arthur2019;@ratti2010].
 
-Social media also presents rich semantic information regarding locations through text associated with geotagged social media posts. Comparative analysis of corpora associated with geotagged locations similarly exhibit regionality [@yin2017a]; for example, tweets from the North East of England are statistically different compared with the South [@arthur2019].
+Social media also presents rich semantic information regarding locations through text associated with geotagged social media posts. Comparative analysis of corpora associated with geotagged locations similarly exhibit regional cohesion [@yin2017a]; for example, tweets from the North East of England are statistically different compared with the South [@arthur2019].
 
 In the context of political science, regional identities have been well studied through the use of structured survey or census data [@griffiths2022;@haesly2005;@llamas2014], which may provide explanation into the
 inherent geographic restrictions that still appear with social media interactions. Language itself can be a strong indicator of regional identity [@haesly2005;@llamas2009;@llamas2014], and past work has considered the regional variation in language that exists within social media networks [@huang2016;@goncalves2014;@perez2019;@arthur2019].
@@ -79,19 +80,20 @@ The concept of regional identities within populations has been well studied from
 
 When considering both Scottish and Welsh identities, @haesly2005 observe that in both cases, respondents display strong national pride and emphasise their distinction from England. The overall level of pride however was found to be stronger in Scotland, rooted in the richer history that creates a more distinct nation compared with Wales. Other studies have also found that people from North East England exhibit a strong sense of regional identity and emphasise their distinction from the rest of England, built on a historical sense of regional pride [@middleton2008;@nayak2016]. The strength of national identities may be quantified through the use of Relative Territorial Identity (RTI) surveys, which asks respondents to rank their national identities on a scale ranging from 'not at all' to 'very strongly' [@griffiths2022]. @henderson2021 identify English nationalism by questioning a persons beliefs whether they are British or English. Similarly, work has identified a strong sense of Scottish identity from questioning whether a person feels more Scottish than British [@carman2014].
 
-Many works emphasise the importance of language in defining regional identities [@haesly2005;@llamas2009;@llamas2014]. The Scottish identity is strongly associated with a sub-dialect of English known as 'Scottish English' which includes words and phrases that are uncommon outside of Scotland [@stuart-smith2008]. Language in the North East of England is also considered a defining feature of its regional identity, despite having no formal language [@nayak2016].
+Many works emphasise the importance of language in defining regional identities [@haesly2005;@llamas2009;@llamas2014]. The Scottish identity, for instance, is strongly associated with a sub-dialect of English known as 'Scottish English' which includes words and phrases that are uncommon outside of Scotland [@stuart-smith2008], while language in the North East of England is also considered a defining feature of its regional identity, despite having no formal language [@nayak2016]. Language has also been used to define
 
-Regional variations in linguistic characteristics are often quantified from a statistical lexical perspective, identifying regional differences in common words on Twitter [@huang2016;@eisenstein2014;@goncalves2014;@goncalves2014;@arthur2019], or identifying dialects from active participation methods [@clopper2016]. @arthur2019 for example examined lexicons associated with cohesive regions in England and Wales generated from an analysis of social networks, establishing a cosine similarity measure between them. They found that the Welsh lexicon appeared the most dissimilar to all other regions, while Northern English regions were more similar to each other compared with Southern regions.
+Regional variations in linguistic characteristics are often quantified from a statistical lexical perspective, identifying regional differences in common words on Twitter [@huang2016;@eisenstein2014;@goncalves2014;@goncalves2014;@arthur2019], or identifying dialects from active participation methods [@clopper2016]. While few explicitly consider the link between regional identity and language on social media, @arthur2019 examined lexicons associated with cohesive regions in England and Wales generated from an analysis of social networks, establishing a cosine similarity measure between them. Results indicated that the Welsh lexicon appeared the most dissimilar to all other regions, while Northern English regions were more similar to each other compared with Southern regions, which conforms with observations made in survey focussed regional identity research [@haesly2005]. Alternatively, @huang2016 analyse geotagged Twitter data lexical alternations to establish hierarchical dialect regions within the US, establishing a clear North South divide, which conforms with cultural geography findings.
+
+NOTE: [@goncalves2014]: defining macro regions from spanish dialects; Geotagged Tweets. Dialects derived from lexicons.
+NOTE: @russ
 
 In our work we aim to generate a measure of regional identity through an examination of text associated with place names extracted from comments on the social media website Reddit. While past work has examined cohesion within regions from the perspective of social media networks, or by examining lexicons associated with geotagged social media messages, we examine regional variations derived from text associated with directly embedded place names. Unlike using geotags, which mean linguistic features relate solely to a person posting from within a location, our data captures any comment than mentions a location in context; both from people living within the mentioned location, and people from outside mentioning them. This means that we capture broad opinionated regional identities, built from a variety of contexts, rather than from a just from the point of a view of examining the dialect of a location.
 
-Instead of using lexical approaches, we consider the ability of large language models to embed contextual semantic information from text when generating high dimensional text representations, which is not possible with count-based lexicons. We believe this property is important in this research, given the meaning of words, especially in informal, region specific language is highly context dependent.
+Instead of using lexical approaches, we consider the ability of large language models to embed contextual semantic information from text when generating high dimensional text representations [@devlin2019], which is not possible with count-based lexicons. We believe this property is important in this research, given the meaning of words, especially in informal, region specific language, is highly context dependent.
 
-Aims:
-
-1. Calculate Semantic similarity measures between regional corpora
-2. Generate cohesive meta-region clusters within the UK based on semantic information
-3. Examine the distribution of regional identity across all UK regions
+> **Aim 1:** Calculate Semantic similarity measures between regional corpora
+> **Aim 2:** Generate cohesive meta-region clusters within the UK based on semantic information
+> **Aim 3:** Examine the distribution of regional identity across all UK regions
 
 # Methodology
 
@@ -203,7 +205,7 @@ plot_place_vectors(region_embeddings, en_regions, basemap)
 plt.show()
 ```
 
-@fig-clusters gives K Means clusters for transformer embeddings decomposed into two dimensions with $k=5$. These Clusters indicate regional corpora that share similar semantic properties. Notably Scotland, the North East, and West Midlands each appear as single values in unique clusters, suggesting semantically distinct corpora from the rest of the country. There are two further clusters which encompass the South East of England (Cluster 1), and the rest of England and Wales (Cluster 3). @fig-clusters (B) reveals that clusters do broadly appear to reflect distance-restricted geographic properties, while also capturing some divergences from this where neighbouring administrative regions appear in distinct clusters.
+@fig-clusters shows K Means clusters for transformer embeddings decomposed into two dimensions with $k=5$, indicating regional corpora that share similar semantic properties. Notably Scotland, the North East, and West Midlands each appear as single values in unique clusters, suggesting semantically distinct corpora from the rest of the country. There are two further clusters which encompass the South East of England (Cluster 1), and the rest of England and Wales (Cluster 3). @fig-clusters (B) reveals that clusters do broadly appear to reflect distance-restricted geographic properties, while also capturing some divergences from this where neighbouring administrative regions appear in distinct clusters.
 
 ```{python}
 # | label: fig-similarity
@@ -215,17 +217,15 @@ plot_similarity(region_embeddings)
 plt.show()
 ```
 
-When we compare the cosine similarity of the mean embeddings relating to each region on @fig-similarity, we can more directly observe the intra-region cohesions. The North West has the overall highest levels of cosine similarity with each other region, with comparatively high similarity with each other region. Lower similarities occur in regions like Wales, the Midlands, and Yorkshire, generally caused by lower overall similarities with London, the South East and East of England. In particular, the South Eastern region of England (Cluster 1 on @fig-clusters), has low overall similarity with all other regions, excluding the North West.
+Comparing the cosine similarity of the mean embeddings relating to each region on @fig-similarity, we can more directly observe intra-region cohesion. The North West has the overall highest levels of cosine similarity with each other region, with comparatively high similarity with each other region. Lower similarities occur in regions like Wales, the Midlands, and Yorkshire, generally caused by lower overall similarities with London, the South East and East of England. In particular, the South Eastern region of England (Cluster 1 on @fig-clusters), has low overall similarity with all other regions, excluding the North West. These observations are indicative of a semantic divide between the North and South of England, a feature commonly observed from the context of ... [refs].
 
-With respect Wales we can see that despite having a weak similarity to the South East, Wales appears to share higher similarities with the rest of England. This is however not the case with Scotland, where similarities are overall lower with England. Finally, the North East has the lowest overall similarity of any region in Britain, driven primarily by the very low similarity with the South East of England cluster. Interestingly, despite proximity to Scotland, unlike the North West, the North East shares a very low similarity.
-
-With our high dimensional transformer embeddings we compare the cosine similarity between them on @fig-similarity. The highest and lowest similarity score for each location is highlighted in red and green respectively. As with @fig-clusters, corpora in Scottish cities appear to largely share similarities, with Glasgow and Edinburgh sharing their highest similarity values. The city with the lowest similarity to the most other locations is Oxford, which shares low values with cities in Scotland, as well as Liverpool and Manchester. London again stands out, with overall very low similarities with all other cities, but the highest similarity with Manchester.
+With respect Wales we can see that despite having a weak similarity to the South East, Wales shares higher similarities with the rest of England. This is not the case with Scotland however, where similarities are overall lower with England. Finally, the North East has the lowest overall similarity of any region in Britain, driven primarily by the very low similarity with the South East of England cluster. This observation conforms with the strong regional identity that has been observed in the North East from a qualitative perspective [@middleton2008;@nayak2016], and quantitative analysis of Tweet contents [@arthur2019]. Interestingly, despite bordering Scotland, the North East does not share the high similarity found between the North West and Scotland.
 
 ## Regional Identities
 
 @fig-identity shows the distribution of regional identities identified through our zero-shot classification methodology. Across each region, the 'English' identity is always lower than 'British', suggesting that regions within England typically identify more strongly with the United Kingdom than solely England. Unlike English regions however, both Scotland and Wales identify most strongly with their respective nationalities. While the Welsh identity is reasonably weak, below the weakest British identity in the UK, the Scottish identity is by far the most strong of any identity across every region.
 
-These results mirror those of past work considering regional identities through the use of structured surveys. Scottish and Welsh identities are both considered stronger than a British identity within these countries, but the Scottish identity is much stronger than the Welsh identity.
+These results mirror those of past work considering regional identities through the use of structured surveys. Scottish and Welsh identities are both considered stronger than a British identity within these countries, but the Scottish identity is much stronger than the Welsh identity [@haesly2005].
 
 ```{python}
 # | label: fig-identity
@@ -237,15 +237,30 @@ from paper.figures import plot_zero_shot
 plot_zero_shot(Paths.PROCESSED / "places_zero_shot.parquet")
 ```
 
-The model makes some interesting choices depending on the sentiment of the input text. For example if we input "I love Scotland!" the model labels the text as Scottish with 94% confidence, however if we change the text to "I hate Scotland!" the model labels the text as British with 60% confidence, suggesting that the model understands that personal national sentiment is typically more likely to be positive.
+To identify why the model makes certain predictions, we input a selection of phrases to identify the model confidence outputs, shown on Table \ref{tbl-interpret}. The model makes some interesting choices depending on the sentiment of the input text. For example if we input 'I love Scotland!' the model labels the text as Scottish, while if we change the text to 'I hate Scotland!' the model labels the text as British, with similar results of Wales. These results perhaps suggest that the model understands that personal national sentiment is typically more likely to be positive. 'I hate England!' and 'I love England!' are both considered British, however.
+
+```{python}
+# | output: asis
+
+from paper.tables import tbl_interpret
+
+print(
+    tbl_interpret().to_latex(
+        hrules=True,
+        label="tbl-interpret",
+        caption="Model response to strong national preferences.",
+        environment="longtable",
+    )
+)
+```
 
 Unusual patterns emerge if we select particular cities; hating Aberdeen is more likely to be Scottish, while hating Edinburgh is more likely to be British. Hating 'the North' is more likely to be British, while hating 'the South' is more likely to the Scottish. Most interestingly, the model appears mostly reluctant to label any text explicitly talking about English locations as English, and prefers to use British. This perhaps reflects the overall general national identity that is associated with England as a country within the UK, compared with Scotland and Wales.
 
 # Conclusion
 
-Our paper demonstrates the ability to compare Reddit comments relating to cities across the UK, using document embeddings generated from a transformer neural network. Instead of focussing on physical interactions between people or social media interactions, our work identifies relationships between cities through their semantic footprint, and analysing each corpus computationally allows for direct comparisons between cities through clustering and cosine similarity.
+Our paper demonstrates the ability to compare Reddit comments relating to locations within regions across the UK, using document embeddings generated from a transformer neural network. Instead of focussing on physical interactions between people or geotagged social media interactions, our work identifies relationships between regions through their semantic footprint, and analysing each corpus computationally allows for direct comparisons between cities through clustering and cosine similarity. We additionally demonstrate the ability to capture zero-shot classifications of regional identities through emergent properties of large language models.
 
-Our analysis reveals distinct clusters which largely reflect geographic proximity of locations, however, interesting deviations from proximity do emerge. Oxford and Cambridge are both clustered and share a high cosine similarity, but generate the lowest similarity with many other locations in the UK, including London. London in particular appears distinct from the rest of the UK, while cities that are not geographically close exhibit clustering and high similarity, such as Liverpool and Newcastle.
+Our analysis reveals distinct clusters which largely reflect geographic proximity of locations, however, interesting anomalies emerge, with the West Midlands and the North East. The South East in particular appears distinct from the rest of the UK, while Wales shares a stronger identity with the UK compared with Scotland.
 
 The information generated through our work presents an alternative view of relationships between cities that are not captured by existing data sources, all of which rely on explicit geographic coordinate information. Instead, we build similarities and clusters directly from the semantic information that exists within their respective corpora. Unlike traditional data, which captures objective social interactions between regions, the deviations from the restriction of geographic distance between several cities in our work appears to reflect the more subjective language that shapes the cultural and perceived identity of regions, and the relationships between them.
 

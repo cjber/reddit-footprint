@@ -1,12 +1,7 @@
 import pandas as pd
 import polars as pl
-from sentence_transformers import SentenceTransformer
 
 from src.common.utils import MODEL, Paths
-
-model = SentenceTransformer(MODEL)
-
-places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
 
 
 def desc_tbl(places):
@@ -37,4 +32,5 @@ def desc_tbl(places):
 
 
 if __name__ == "__main__":
+    places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
     print(desc_tbl(places))
