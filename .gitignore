@@ -3,6 +3,7 @@
 .envrc
 notes.md
 ltex.*.txt
+data/processed
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -2,82 +2,63 @@ import re
 from pathlib import Path
 
 import geopandas as gpd
-import pandas as pd
 import polars as pl
 from tqdm import tqdm
 
-from src.common.utils import EXCLUDE, SEED, Paths
+from src.common.utils import Const, Paths
 
 
-def join_to_regions(places_path, england_path, scotland_path, wales_path):
-    wales = gpd.GeoDataFrame(
-        {"geometry": [gpd.read_file(wales_path).unary_union]},
-        crs=27700,
-    )
-    wales["RGN21NM"] = "Wales"
-    scotland = gpd.GeoDataFrame(
-        {"geometry": [gpd.read_file(scotland_path).unary_union]},
-        crs=27700,
-    )
-    scotland["RGN21NM"] = "Scotland"
+def join_to_regions(places_path):
+    regions = gpd.read_parquet(Paths.RAW / "en_regions.parquet")
+    lad = gpd.read_file(Paths.RAW / "local_authority_2022.gpkg")[
+        ["LAD22NM", "geometry"]
+    ]
 
-    regions = pd.concat(
-        [
-            gpd.read_file(england_path)[["RGN21NM", "geometry"]],
-            wales,
-            scotland,
+    df = (
+        pl.read_parquet(places_path)
+        .filter(pl.col("word").is_in(Const.EXCLUDE).is_not())[
+            [
+                "idx",
+                "h3_05",
+                "text",
+                "author",
+                "word",
+                "start_idx",
+                "end_idx",
+                "easting",
+                "northing",
+            ]
         ]
+        .to_pandas()
     )
-    regions["geometry"] = regions.simplify(1000)
-    regions.to_parquet(Paths.PROCESSED / "en_regions.parquet")
-
-    df = pl.read_parquet(places_path).to_pandas()
 
     gdf = gpd.GeoDataFrame(
-        df, geometry=gpd.points_from_xy(df["easting"], df["northing"]), crs=27700
+        df,
+        geometry=gpd.points_from_xy(df["easting"], df["northing"]),
+        crs=27700,
     )
 
-    regions = gpd.sjoin(gdf.drop_duplicates(subset="geometry"), regions)
+    regions = gpd.sjoin(gdf.drop_duplicates(subset="geometry"), regions).drop(
+        "index_right", axis=1
+    )
+    regions = gpd.sjoin(regions, lad)
 
-    return pl.from_pandas(regions[["easting", "northing", "RGN21NM"]]).join(
-        pl.from_pandas(
-            df[
-                [
-                    "idx",
-                    "h3_05",
-                    "text",
-                    "author",
-                    "word",
-                    "start_idx",
-                    "end_idx",
-                    "easting",
-                    "northing",
-                ]
-            ]
-        ),
+    return pl.from_pandas(regions[["easting", "northing", "RGN21NM", "LAD22NM"]]).join(
+        pl.from_pandas(df),
         on=["easting", "northing"],
     )
 
 
-def read_places(places: Path, places_full: Path) -> pl.DataFrame:
+def read_places(places_path: Path, places_full: Path) -> pl.DataFrame:
     df = (
-        pl.scan_parquet(places)
-        .unique()
+        pl.scan_parquet(places_path)
         .filter(
-            (pl.col("easting").is_not_null()) & (pl.col("word").is_in(EXCLUDE).is_not())
+            (pl.col("easting").is_not_null())
+            & (pl.col("word").is_in(Const.EXCLUDE).is_not())
         )
-        .with_columns(
-            pl.count().over("word").alias("word_count"),
-            pl.col("author")
-            .n_unique()
-            .over(["word", "easting", "northing"])
-            .alias("author_count"),
-        )
-        .filter((pl.col("author_count") > 250))
-        .sort("author_count", descending=True)
         .collect()
         .groupby(["word", "easting", "northing"])
-        .apply(lambda x: x if len(x) < 5_000 else x.sample(5_000, seed=SEED))
+        .apply(lambda x: x if len(x) < 5_000 else x.sample(5_000, seed=Const.SEED))
     )
 
     mask_df = (
@@ -101,7 +82,7 @@ def read_places(places: Path, places_full: Path) -> pl.DataFrame:
                 + "Ġ" * (word_len)
                 + f"{row_text[mask_row['end_idx']:]}"
             )
-        row_text = re.sub(r"Ġ+", "", row_text)
+        row_text = re.sub(r"Ġ+", "PLACE", row_text)
         masked_text.append(row_text)
     text = text.with_columns(masked=pl.Series(masked_text)).drop("text")
 
@@ -110,13 +91,8 @@ def read_places(places: Path, places_full: Path) -> pl.DataFrame:
 
 if __name__ == "__main__":
     places_path = Paths.RAW / "places-2023_04_11.parquet"
-    wales_path = Paths.RAW / "wales_bdry.gpkg"
-    scotland_path = Paths.RAW / "scot_bdry.gpkg"
-    england_path = Paths.RAW / "en_regions.gpkg"
 
-    place_regions = join_to_regions(
-        places_path, england_path, scotland_path, wales_path
-    )
+    place_regions = join_to_regions(places_path)
     place_regions.write_parquet(Paths.PROCESSED / "place_regions.parquet")
 
     places = read_places(

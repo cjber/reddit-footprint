@@ -20,8 +20,15 @@ def tbl_interpret():
             outs["Label"].append(out["labels"][0])
             outs["Confidence"].append(out["scores"][0])
 
+    for location in ["Manchester", "Glasgow"]:
+        sentence = f"I live in {location}."
+        out = classifier(sentence, nationality_labels)
+        outs["Sentence"].append(sentence)
+        outs["Label"].append(out["labels"][0])
+        outs["Confidence"].append(out["scores"][0])
+
     return pd.DataFrame(outs).style.format(precision=2).hide(axis="index")
 
 
 if __name__ == "__main__":
-    tbl_interpret().to_latex()
+    print(tbl_interpret().to_latex())

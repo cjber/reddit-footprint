@@ -4,21 +4,26 @@ stages:
     cmd: python -m src.embeddings
     deps:
     - path: data/processed/exclude.txt
-      md5: ea2d45d4711d75afebaeebdd693908c2
-      size: 453
+      hash: md5
+      md5: ccec363cd1dfd0c59fa5d68bbf47565a
+      size: 462
     - path: data/processed/places.parquet
-      md5: 4d912de8dff2c5cd18b760abd3640b76
-      size: 132335775
+      hash: md5
+      md5: 05329ce3bd2485b5bd60eecafeab8ace
+      size: 399809368
     - path: src/common/utils.py
-      md5: deeb05d42554f77118bed6e03e4bc5b1
-      size: 964
+      hash: md5
+      md5: 208810e2392677b6860826b6b548166d
+      size: 2335
     - path: src/embeddings.py
-      md5: 454ff661a5059ae0265931c50f36e0f3
-      size: 1169
+      hash: md5
+      md5: c67202d744b140ea6a34116fe759f248
+      size: 1423
     outs:
     - path: data/processed/region_embeddings.parquet
-      md5: 8055ce8695fac9e3b0b073f5f23a48cc
-      size: 35439
+      hash: md5
+      md5: c0ebfd68b716fc76e7627e4ca56b6c89
+      size: 35462
   preprocesing:
     cmd: python -m src.preprocessing
     deps:
@@ -64,72 +69,81 @@ stages:
     cmd: python -m src.zero_shot
     deps:
     - path: data/processed/exclude.txt
-      md5: ea2d45d4711d75afebaeebdd693908c2
-      size: 453
+      hash: md5
+      md5: ccec363cd1dfd0c59fa5d68bbf47565a
+      size: 462
     - path: data/processed/places.parquet
-      md5: 4d912de8dff2c5cd18b760abd3640b76
-      size: 132335775
+      hash: md5
+      md5: e70ae6ce5711f8a1d7fc0ab9293c3d26
+      size: 400063838
     - path: src/common/utils.py
-      md5: deeb05d42554f77118bed6e03e4bc5b1
-      size: 964
+      hash: md5
+      md5: 208810e2392677b6860826b6b548166d
+      size: 2335
     - path: src/zero_shot.py
-      md5: e63bf35426df310506ae24b83506e68c
-      size: 1613
+      hash: md5
+      md5: 069fb8bf521977f1deca420064ccb8b7
+      size: 1132
     outs:
     - path: data/processed/places_zero_shot.parquet
-      md5: fb335d5255f2c3dac34832028fca5188
-      size: 138094451
+      hash: md5
+      md5: 9c8c68d8da5e42f73b644e6713d0d62a
+      size: 325155239
   preprocessing:
     cmd: python -m src.preprocessing
     deps:
+    - path: /home/cjber/data/en_regions.parquet
+      hash: md5
+      md5: ecb827dcf9cb5ead5def9ba75652a6d2
+      size: 439367
     - path: /home/cjber/data/places-2023_04_11.parquet
+      hash: md5
       md5: bcb63ac9ff9597b327430e2b0188333e
       size: 363137511
     - path: /home/cjber/data/places_full-2023_04_11.parquet
+      hash: md5
       md5: f495c36d310ffb50914c43fce98160b8
       size: 393266925
-    - path: /home/cjber/data/scot_bdry.gpkg
-      md5: 9c16518630c809fe1ade133e415c454d
-      size: 3694592
-    - path: /home/cjber/data/wales_bdry.gpkg
-      md5: 6de86ba2aafbfc933f442075bb4afdfb
-      size: 5984256
     - path: data/processed/exclude.txt
-      md5: ea2d45d4711d75afebaeebdd693908c2
-      size: 453
+      hash: md5
+      md5: ccec363cd1dfd0c59fa5d68bbf47565a
+      size: 462
     - path: src/common/utils.py
-      md5: deeb05d42554f77118bed6e03e4bc5b1
-      size: 964
+      hash: md5
+      md5: 208810e2392677b6860826b6b548166d
+      size: 2335
     - path: src/preprocessing.py
-      md5: 25ca0d5b058dc63b9cd7993e7fb84589
-      size: 3848
+      hash: md5
+      md5: 595285ed3ac33178d1dd067010861c23
+      size: 2988
     outs:
-    - path: data/processed/en_regions.parquet
-      md5: ecb827dcf9cb5ead5def9ba75652a6d2
-      size: 439367
     - path: data/processed/place_regions.parquet
-      md5: 1151203e3f5089149bca75e2c0c4aab5
-      size: 183877946
+      hash: md5
+      md5: 5d44d2f3d924b6f4de96b0b2c5922810
+      size: 185541482
     - path: data/processed/places.parquet
-      md5: 4d912de8dff2c5cd18b760abd3640b76
-      size: 132335775
+      hash: md5
+      md5: 05329ce3bd2485b5bd60eecafeab8ace
+      size: 399809368
   paper:
-    cmd: quarto render paper/main.qmd
+    cmd: quarto render paper/main.qmd --execute-dir=$PWD
     deps:
-    - path: data/processed/places_zero_shot.parquet
-      md5: fb335d5255f2c3dac34832028fca5188
-      size: 138094451
-    - path: data/processed/region_embeddings.parquet
-      md5: 8055ce8695fac9e3b0b073f5f23a48cc
-      size: 35439
+    - path: data/processed
+      hash: md5
+      md5: 801c63d1d5cbf77a4ceec4a155531cf4.dir
+      size: 5472372427
+      nfiles: 10
     - path: paper/figures
-      md5: 4f81d5927e09c18b9de8a833d1db4c79.dir
-      size: 4502307
-      nfiles: 20
+      hash: md5
+      md5: 3728cd7e51fa62f446deea835816336b.dir
+      size: 71450
+      nfiles: 14
     - path: paper/main.qmd
-      md5: 9af7d55d7e4e2f7712c38dd27742296a
-      size: 23800
+      hash: md5
+      md5: 7490778233925d0ecddf112cfae1b7c1
+      size: 39894
     outs:
     - path: paper/main.pdf
-      md5: 988cccba52e7b0d153c6898bff266ed2
-      size: 4186032
+      hash: md5
+      md5: b48a5a5d1f055b26fc413741ef845576
+      size: 4800021

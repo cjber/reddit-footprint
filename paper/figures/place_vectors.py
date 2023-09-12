@@ -1,109 +1,95 @@
-import geopandas as gpd
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import polars as pl
 import seaborn as sns
+import umap
 from matplotlib import gridspec
-from sklearn.cluster import KMeans
+from matplotlib.colors import ListedColormap
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
-from src.common.utils import SEED, Paths
+from src.common.utils import Const, process_outs
 
 
-def plot_place_vectors(region_embeddings: pl.DataFrame, en_regions, basemap) -> None:
-    kmeans = KMeans(n_clusters=5, random_state=SEED, n_init="auto")
-    clusters = kmeans.fit_predict(list(region_embeddings["embeddings"]))
+def process_embeddings(df):
+    embeddings = df["embeddings"].to_list()
+    embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-    pca = PCA(n_components=2, random_state=SEED)
-    pca_vecs = pca.fit_transform(list(region_embeddings["embeddings"]))
-    x0 = pca_vecs[:, 0]
-    x1 = pca_vecs[:, 1]
+    clustering_model = AgglomerativeClustering(n_clusters=None, distance_threshold=1.5)
+    clustering_model.fit(embeddings)
+    df["cluster"] = clustering_model.labels_
 
-    pca = PCA(n_components=1, random_state=SEED)
-    pca_vecs = pca.fit_transform(list(region_embeddings["embeddings"]))
+    umap2 = umap.UMAP(n_components=2, random_state=Const.SEED)
+    pca_vecs = umap2.fit_transform(embeddings)
+    df["vecx"] = pca_vecs[:, 0]
+    df["vecy"] = pca_vecs[:, 1]
 
-    region_embeddings = pd.concat(
-        [
-            region_embeddings,
-            pd.DataFrame({"x0": x0, "x1": x1, "pca": pca_vecs.flatten()}),
-        ],
-        axis=1,
-    )
-    region_embeddings = pd.concat(
-        [region_embeddings, pd.DataFrame({"cluster": clusters})], axis=1
-    )
-    region_embeddings["cluster"] = region_embeddings["cluster"] + 1
+    pca_1 = PCA(n_components=1, random_state=Const.SEED)
+    pca_result = pca_1.fit_transform(embeddings)
+    df["pca"] = pca_result[:, 0]
+    return df
 
-    _ = plt.figure(figsize=(6.5, 3))
-    gs = gridspec.GridSpec(1, 2, width_ratios=[2, 1])
-    ax1 = plt.subplot(gs[0])
-    ax2 = plt.subplot(gs[1])
-    gs.update(wspace=-0.05, hspace=0)
-    ax1.set_title("(A)")
-    ax2.set_title("(B)")
 
-    ax1.set_xlabel("X0")
-    ax1.set_ylabel("X1")
+def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
+    df = process_embeddings(df)
+
+    fig = plt.figure(figsize=(8, 6))
+    custom_cmap = ListedColormap(sns.color_palette("viridis_r"))
+
+    gs = gridspec.GridSpec(2, 2, width_ratios=[1, 1])
+    ax = fig.add_subplot(gs[0, 0])
+    ax.set_title("(A)")
+
     sns.scatterplot(
-        data=region_embeddings,
-        x="x0",
-        y="x1",
+        data=df,
+        x="vecx",
+        y="vecy",
         hue="cluster",
-        palette="viridis",
-        edgecolor="lightgrey",
-        s=20,
-        ax=ax1,
+        palette=custom_cmap,
+        edgecolor=None,
+        s=5,
+        ax=ax,
+        legend=False,
     )
-    for idx, row in region_embeddings.iterrows():
-        ax1.text(row["x0"] + 0.003, row["x1"], row["RGN21NM"], fontsize=8)
+    plt.axis("off")
 
-    handles, labels = ax1.get_legend_handles_labels()
-    for ha in handles:
-        ha.set_edgecolor("lightgrey")
-        ha.set_linewidth(0.5)
-    sns.move_legend(
-        obj=ax1,
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.12),
-        ncol=5,
-        title=None,
-        frameon=False,
-        markerscale=0.8,
-        handles=handles,
+    ax = fig.add_subplot(gs[1, 0])
+    ax.set_title("(B)")
+    sns.histplot(
+        data=df,
+        x="RGN21NM",
+        stat="proportion",
+        hue="cluster",
+        multiple="fill",
+        ax=ax,
+        palette=custom_cmap,
+        legend=False,
     )
+    plt.xticks(rotation=45, ha="right")
 
-    ax1.set(ylabel=None, xlabel=None)
-    ax1.set(yticklabels=[], xticklabels=[])
-    ax1.tick_params(left=False, bottom=False)
-    ax1.spines["top"].set_visible(False)
-    ax1.spines["right"].set_visible(False)
-    # ax1.spines['bottom'].set_visible(False)
-    ax1.spines["left"].set_visible(False)
-
-    basemap.plot(ax=ax2, color="lightgrey")
-    region_embeddings.plot(
+    ax = fig.add_subplot(gs[:, 1])
+    ax.set_title("(C)")
+    df.plot(
         column="cluster",
-        ax=ax2,
-        cmap="viridis",
-        edgecolor="lightgrey",
-        linewidth=0.5,
+        ax=ax,
+        cmap=custom_cmap,
+        legend=True,
+        legend_kwds={"loc": "lower center", "ncols": 3, "frameon": False},
+        categorical=True,
+        edgecolor="face",
     )
-    # ax2.set(yticklabels=[], xticklabels=[], ylabel=None, xlabel=None)
-    ax2.set_xlim(left=10_000)
+    rgn.boundary.simplify(1000).plot(
+        color=None,
+        edgecolor="black",
+        linewidth=0.5,
+        alpha=0.2,
+        ax=ax,
+    )
     plt.axis("off")
 
 
 if __name__ == "__main__":
-    basemap = gpd.read_parquet(Paths.RAW / "ukpoly-2023_03_03.parquet")
-    region_embeddings = pl.read_parquet(
-        Paths.PROCESSED / "region_embeddings.parquet"
-    ).to_pandas()
-    en_regions = gpd.read_parquet("./data/processed/en_regions.parquet")
-    en_regions["geometry"] = en_regions.simplify(1000)
+    _, regions, _, _, lad_embeddings = process_outs()
 
-    region_embeddings = gpd.GeoDataFrame(
-        region_embeddings.merge(en_regions, on="RGN21NM")
-    )
-
-    plot_place_vectors(region_embeddings, en_regions, basemap)
+    plt_place_vectors(lad_embeddings, regions)
     plt.show()
