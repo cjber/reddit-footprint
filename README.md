@@ -1,6 +1,6 @@
 <div align="center">
 
-# Regional Identity and Cohesion Identified in Britain through Reddit Comments
+# Mapping Semantic Regional Variation in Great Britain through Reddit Comments
 
 <a href="https://www.python.org"><img alt="Python" src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white"/></a>
 <a href="https://pytorch.org/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch%20-%23EE4C2C.svg?&style=for-the-badge&logo=PyTorch&logoColor=white"/></a>
@@ -28,7 +28,7 @@ Jeremy Morley \[[`@jeremy_morley`](http://twitter.com/meremy_morley)\]<sup>3</su
 
 ## Abstract
 
-Physical and online social interactions broadly decline in strength with geographic distance, and intra-community interaction strength often appears to correlate with pre-defined geographic administrative boundaries. These factors suggest that there are strong regional influences on social interactions, particularly given online social interactions are not directly restricted by distance. Regional identities between constituent countries within the UK are frequently studied from the context of structured surveys and census data, with language seen as a defining feature of these identities. In our work, we consider the exploration of semantic interaction strength, building a comparative analysis of corpora related to regions within the UK, determining shared semantic similarities between them. Building on this analysis, we establish the strength of regional Scottish, Welsh, English, and British identities within each region, using emergent properties of a large language model. We find that distinct groups emerge particularly in the South East and North East of England, while Scottish regional identity appears to be more distinct from England and Britishness compared with the Welsh identity.
+Observed regional variation in geotagged social media text is often attributed to dialects, where features in language are assumed to exhibit region-specific properties. While dialects are seen as a key component in defining the identity of regions, there are a multitude of other geographic properties that may be captured within natural language text. In our work, we consider locational mentions that are directly embedded within comments on the social media website Reddit, providing a range of associated semantic information, and enabling deeper representations between locations to be captured. Using a large corpus of Reddit comments from UK related local discussion subreddits, we identify place names using a transformer-based named entity recognition model. Embedded semantic information is then generated from these comments and aggregated into local authority districts, representing the semantic footprint of these regions. These footprints broadly exhibit spatial autocorrelation, with clusters that conform with the national borders of Wales and Scotland. London, Wales, and Scotland demonstrate notably different semantic footprints compared with the rest of the UK, which may be explainable through the perception of national identity associated with these regions.
 
 ## HuggingFace NER Model
 
