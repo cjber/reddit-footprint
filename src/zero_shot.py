@@ -13,15 +13,7 @@ def zero_shot(places):
         model="typeform/distilbert-base-uncased-mnli",
         device=0,
     )
-    places = places.filter(pl.col("text").str.n_chars() > 10)  # fix empty strings
-    # places = places.with_columns(
-    #     pl.col("masked")
-    #     .str.to_lowercase()
-    #     .str.replace(
-    #         r"england|english|wales|welsh|scotland|scottish|britain|british", "PLACE"
-    #     )
-    # )
-
+    places = places.filter(pl.col("text").str.n_chars() > 10).sample(100_000)
     corpus = Dataset.from_pandas(places[["text"]].unique().to_pandas())
 
     nationality_labels = ["British", "English", "Scottish", "Welsh"]
