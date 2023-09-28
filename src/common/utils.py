@@ -26,12 +26,6 @@ class Const:
     with open(Paths.PROCESSED / "exclude.txt", "r") as exclude:
         EXCLUDE = list({line.strip() for line in exclude.readlines()})
 
-    CITIES = [
-        "Glasgow City",
-        "City of London",
-        "City of Edinburgh",
-    ]
-
 
 def process_outs():
     places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
@@ -69,7 +63,47 @@ def process_outs():
         "RGN21NM",
     ] = "Scotland"
 
-    lad_embeddings["geometry"] = lad_embeddings["geometry"].simplify(1000)
-    region_embeddings["geometry"] = region_embeddings["geometry"].simplify(1000)
+    # regions["geometry"] = regions["geometry"].simplify(5000)
+    region_embeddings["geometry"] = region_embeddings["geometry"].simplify(5000)
+    lad["geometry"] = lad["geometry"].simplify(2500)
+    lad_embeddings["geometry"] = lad_embeddings["geometry"].simplify(2500)
 
     return places, regions, lad, region_embeddings, lad_embeddings
+
+
+def filtered_annotation(df, names, ax):
+    filtered_resid = df[df["LAD21NM"].isin(names)]
+    offset = 80_000
+    for _, row in filtered_resid.iterrows():
+        x = row.geometry.centroid.x
+        y = row.geometry.centroid.y
+        if x < 300_000:
+            ax.annotate(
+                row["LAD21NM"].title(),
+                xy=(x, y),
+                xytext=(
+                    x - (4 * offset),
+                    y + (offset * 0.8),
+                ),
+                arrowprops=dict(
+                    arrowstyle="->",
+                    connectionstyle="angle,angleA=1,angleB=90,rad=0",
+                ),
+                bbox=dict(boxstyle="square", fc="0.9", alpha=0.8),
+                fontsize=6,
+            )
+        else:
+            ax.annotate(
+                row["LAD21NM"].title(),
+                xy=(x, y),
+                xytext=(
+                    x + (offset),
+                    y + (offset * 0.8),
+                ),
+                arrowprops=dict(
+                    arrowstyle="->",
+                    connectionstyle="angle,angleA=0,angleB=90,rad=0",
+                ),
+                bbox=dict(boxstyle="square", fc="0.9", alpha=0.8),
+                fontsize=6,
+            )
