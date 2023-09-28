@@ -16,7 +16,8 @@ def join_to_regions(places_path):
 
     df = (
         pl.read_parquet(places_path)
-        .filter(pl.col("word").is_in(Const.EXCLUDE).is_not())[
+        .filter(pl.col("word").is_in(Const.EXCLUDE).is_not())
+        .select(
             [
                 "idx",
                 "h3_05",
@@ -28,7 +29,7 @@ def join_to_regions(places_path):
                 "easting",
                 "northing",
             ]
-        ]
+        )
         .to_pandas()
     )
 
@@ -52,13 +53,10 @@ def join_to_regions(places_path):
 def read_places(places_path: Path, places_full: Path) -> pl.DataFrame:
     df = (
         pl.scan_parquet(places_path)
-        .filter(
-            (pl.col("easting").is_not_null())
-            & (pl.col("word").is_in(Const.EXCLUDE).is_not())
-        )
+        .filter(pl.col("easting").is_not_null())
         .collect()
-        .groupby(["word", "easting", "northing"])
-        .apply(lambda x: x if len(x) < 5_000 else x.sample(5_000, seed=Const.SEED))
+        .group_by(["word", "easting", "northing"])
+        .map_groups(lambda x: x if len(x) < 5_000 else x.sample(5_000, seed=Const.SEED))
     )
 
     mask_df = (
@@ -99,4 +97,5 @@ if __name__ == "__main__":
         Paths.PROCESSED / "place_regions.parquet",
         Paths.RAW / "places_full-2023_04_11.parquet",
     )
+
     places.write_parquet(Paths.PROCESSED / "places.parquet")
