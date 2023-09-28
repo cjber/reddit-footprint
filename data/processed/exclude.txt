@@ -1,54 +1,44 @@
-abbey
-amsterdam
-angus
-bank
-barcelona
 britain
 british
-brooklyn
-caledonian
-california
-canada
-captial
-central
-city
 city centre
-colorado
-copenhagan
-costa
-cross
-dublin
+wales
 england
-gibraltar
-glen
-greenland
-halifax
-heathrow
-hill
-holland
-holyrood
-holywood
-ireland
-london bridge
-netherlands
-new york
-new zealand
-northern ireland
-old
-palestine
-paris
-perth
-quarter
-quebec
-saint andrews
 scotland
 scotlands
-shetland
-southside
-toronto
+ireland
+northern ireland
+central
 town
-vegas
-wales
-washington
+cross
+canada
+netherlands
+amsterdam
+glen
+paris
+california
+perth
+new york
 west
+barcelona
+city
+captial
+abbey
+shetland
+costa
+vegas
+dublin
+palestine
+new zealand
+holywood
+toronto
 westminster
+holyrood
+saint andrews
+copenhagan
+caledonian
+gibraltar
+colorado
+old
+holland
+london bridge
+moat
