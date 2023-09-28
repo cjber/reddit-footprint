@@ -8,7 +8,7 @@ from matplotlib.colors import ListedColormap
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
-from src.common.utils import Const, process_outs
+from src.common.utils import Const, filtered_annotation, process_outs
 
 
 def process_embeddings(df):
@@ -38,7 +38,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
 
     gs = gridspec.GridSpec(2, 2, width_ratios=[1, 1])
     ax = fig.add_subplot(gs[0, 0])
-    ax.set_title("(A)")
+    ax.set_title("(a)")
 
     sns.scatterplot(
         data=df,
@@ -54,7 +54,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
     plt.axis("off")
 
     ax = fig.add_subplot(gs[1, 0])
-    ax.set_title("(B)")
+    ax.set_title("(b)")
     sns.histplot(
         data=df,
         x="RGN21NM",
@@ -68,7 +68,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
     plt.xticks(rotation=45, ha="right")
 
     ax = fig.add_subplot(gs[:, 1])
-    ax.set_title("(C)")
+    ax.set_title("(c)")
     df.plot(
         column="cluster",
         ax=ax,
@@ -78,13 +78,26 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
         categorical=True,
         edgecolor="face",
     )
-    rgn.boundary.simplify(1000).plot(
+    rgn.boundary.plot(
         color=None,
         edgecolor="black",
         linewidth=0.5,
-        alpha=0.2,
+        alpha=1,
         ax=ax,
     )
+
+    filtered_annotation(
+        df,
+        [
+            "Glasgow City",
+            "City of Edinburgh",
+            "Cardiff",
+            "Pembrokeshire",
+            "City of London",
+        ],
+        ax,
+    )
+
     plt.axis("off")
 
 

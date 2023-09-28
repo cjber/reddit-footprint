@@ -12,7 +12,6 @@ from src.common.utils import process_outs
 
 
 def plt_similarity(region_embeddings: pl.DataFrame):
-    region_embeddings["geometry"] = region_embeddings["geometry"].simplify(5000)
     cosine_sim = cosine_similarity(list(region_embeddings["embeddings"]))
     cosine_sim[np.isclose(cosine_sim, 1)] = np.nan
     cosine_sim = scale(cosine_sim)

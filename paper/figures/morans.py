@@ -10,7 +10,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pysal.lib import weights
 from sklearn.metrics.pairwise import cosine_similarity
 
-from src.common.utils import Const, process_outs
+from src.common.utils import Const, filtered_annotation, process_outs
 
 N_COMPONENTS = 2
 
@@ -24,21 +24,20 @@ def process_moran(lad_embeddings):
         lad_embeddings[f"pca{n}"] = pca_result[:, n]
 
         w1 = weights.contiguity.Queen.from_dataframe(lad_embeddings)
-        w2 = weights.distance.KNN.from_dataframe(lad_embeddings, k=8)
-        w = weights.set_operations.w_union(w1, w2)
-        w.transform = "R"
+        w2 = weights.KNN.from_dataframe(lad_embeddings, k=8)
+        w1 = weights.set_operations.w_union(w1, w2)
+        w1.transform = "R"
 
         lad_embeddings[f"pca_stdd{n}"] = (
             lad_embeddings[f"pca{n}"] - lad_embeddings[f"pca{n}"].mean()
         )
         lad_embeddings[f"pca_std_lag{n}"] = weights.spatial_lag.lag_spatial(
-            w, lad_embeddings[f"pca_stdd{n}"]
+            w1, lad_embeddings[f"pca_stdd{n}"]
         )
 
         lisa = Moran_Local(
             lad_embeddings[f"pca_stdd{n}"].astype(float),
-            w,
-            n_jobs=-1,
+            w1,
             keep_simulations=False,
             seed=Const.SEED,
         )
@@ -46,7 +45,7 @@ def process_moran(lad_embeddings):
         lad_embeddings[f"lisa_q{n}"] = lisa.q
         lad_embeddings[f"lisa_p{n}"] = lisa.p_sim
         lad_embeddings[f"Is{n}"] = lisa.Is
-    return lad_embeddings, w, explained
+    return lad_embeddings, w1, explained
 
 
 def plt_morans(lad_embeddings, w, explained):
@@ -65,8 +64,8 @@ def plt_morans(lad_embeddings, w, explained):
             data=lad_embeddings,
             color=c,
             marker="x",
-            line_kws={"linewidth": 1},
-            scatter_kws={"alpha": 0.5, "s": 10, "linewidth": 1},
+            line_kws={"lw": 1},
+            scatter_kws={"alpha": 0.5, "s": 10, "linewidths": 1},
         )
     ax.axvline(0, c="k", alpha=0.5, linestyle="--")
     ax.axhline(0, c="k", alpha=0.5, linestyle="--")
@@ -75,8 +74,8 @@ def plt_morans(lad_embeddings, w, explained):
     ax.set_title(
         f"Moran's I (1): {moran1.I:.2f}; Moran's I (2): {moran2.I:.2f};"
         f" Cosine Similarity: {sim[0].item():.0%}",
-        pad=-1,
     )
+    return moran1, moran2, sim
 
 
 def plt_lisa(lad_embeddings, n):
@@ -112,7 +111,7 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("bottom", size="2%", pad=0)
     ax.axis("off")
-    ax.set_title(f"({s[1]}) Local Moran's I", pad=-1)
+    ax.set_title(f"({s[1]}) Moran's I: Dim {n}", pad=-1)
     lad_embeddings.plot(
         column=f"Is{n}",
         vmax=1,
@@ -127,7 +126,7 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
 
     ax = fig.add_subplot(gs[n, 2])
     ax.axis("off")
-    ax.set_title(f"({s[2]}) LISA", pad=-1)
+    ax.set_title(f"({s[2]}) LISA: Dim {n}", pad=-1)
     lad_embeddings.loc[(lad_embeddings[f"lisa_p{n}"] >= 0.05), "cmap"] = np.nan
     lad_embeddings.loc[
         ((lad_embeddings[f"lisa_q{n}"] == 2) | (lad_embeddings[f"lisa_q{n}"] == 4))
@@ -164,63 +163,18 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
         },
         ax=ax,
     )
+    if s == "abc":
+        filtered_annotation(lad_embeddings, ["City of London"], ax)
+    else:
+        filtered_annotation(lad_embeddings, ["Glasgow City", "City of Edinburgh"], ax)
 
 
 if __name__ == "__main__":
     _, _, _, _, lad_embeddings = process_outs()
-    lad_embeddings, w, explained = process_moran(lad_embeddings)
+    lad_embeddings, w1, explained = process_moran(lad_embeddings)
 
-    plt_morans(lad_embeddings, w, explained)
+    plt_morans(lad_embeddings, w1, explained)
     plt.show()
 
     plt_lisa(lad_embeddings, [0, 1])
     plt.show()
-
-#
-# offset = 80_000
-# cities = {
-#     "City of Edinburgh": "Edinburgh",
-#     "City of London": "London",
-#     "Glasgow City": "Glasgow",
-#     # "Trafford": "Trafford",
-#     # "Preston": "Preston",
-#     # "Aberdeen City": "Aberdeen",
-#     # "Plymouth": "Plymouth",
-#     # "Exeter": "Exeter",
-#     # "Brighton and Hove": "Brighton",
-#     # "Norwich": "Norwich",
-#     # "North Kesteven": "North Kesteven",
-# }
-# for city in cities:
-#     centre = lad_embeddings[lad_embeddings["LAD21NM"] == city]["geometry"].centroid
-#     city = cities[city]
-#     if centre.x.item() < 300_000:
-#         ax.annotate(
-#             city,
-#             xy=(centre.x, centre.y),
-#             xytext=(
-#                 centre.x - (3 * offset),
-#                 centre.y + offset / 2,
-#             ),
-#             arrowprops=dict(
-#                 arrowstyle="->",
-#                 connectionstyle="angle,angleA=1,angleB=90,rad=0",
-#             ),
-#             bbox=dict(boxstyle="square", fc="0.9", alpha=0.8),
-#             fontsize=6,
-#         )
-#     else:
-#         ax.annotate(
-#             city,
-#             xy=(centre.x, centre.y),
-#             xytext=(
-#                 centre.x + offset,
-#                 centre.y + offset / 2,
-#             ),
-#             arrowprops=dict(
-#                 arrowstyle="->",
-#                 connectionstyle="angle,angleA=0,angleB=90,rad=0",
-#             ),
-#             bbox=dict(boxstyle="square", fc="0.9", alpha=0.8),
-#             fontsize=6,
-#         )
