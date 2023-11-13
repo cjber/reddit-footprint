@@ -4,6 +4,7 @@
 notes.md
 ltex.*.txt
 data/processed
+paper/drafts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
