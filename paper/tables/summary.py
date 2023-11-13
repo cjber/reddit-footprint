@@ -13,24 +13,23 @@ def desc_tbl(places, lad_embeddings):
     )
 
     totals = (
-        places.select((pl.lit("Total").alias("RGN21NM"),) + select_query)
+        places.select((pl.lit("Total").alias("RGN22NM"),) + select_query)
         .to_pandas()
         .style.format(thousands=",", precision=2)
-        .apply(lambda x: pd.Series("midrule:;", index=[0]), subset="RGN21NM")
+        .apply(lambda x: pd.Series("midrule:;", index=[0]), subset="RGN22NM")
         .highlight_between(subset=pd.IndexSlice[0, :], props="bfseries:;")
     )
     return (
-        places.group_by("RGN21NM")
+        places.group_by("RGN22NM")
         .agg(select_query)
-        .sort("Total Places", descending=True)
+        .sort("Total Comments", descending=True)
         .to_pandas()
         .style.format(thousands=",", precision=2)
         .concat(totals)
         .hide(axis="index")
-        # .to_latex(hrules=True)
     )
 
 
 if __name__ == "__main__":
-    places, regions, lad, region_embeddings, lad_embeddings = process_outs()
-    print(desc_tbl(places, lad_embeddings))
+    places, _, _, _, lad_embeddings = process_outs()
+    print(desc_tbl(places, lad_embeddings).to_latex(hrules=True))
