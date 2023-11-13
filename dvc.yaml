@@ -6,11 +6,12 @@ stages:
       - src/preprocessing.py
       - src/common/utils.py
 
-      # - data/processed/exclude.txt
+      - data/processed/exclude.txt
 
       - /home/cjber/data/places-2023_04_11.parquet
       - /home/cjber/data/places_full-2023_04_11.parquet
-      - /home/cjber/data/en_regions.parquet
+      - /home/cjber/data/RGN_EN_BUC_2022.gpkg
+      - /home/cjber/data/LAD_BUC_2022.gpkg
     outs:
       - data/processed/place_regions.parquet
       - data/processed/places.parquet
@@ -21,18 +22,16 @@ stages:
       - src/embeddings.py
       - src/common/utils.py
 
-      # - data/processed/exclude.txt
       - data/processed/places.parquet
     outs:
       - data/processed/region_embeddings.parquet
   zero_shot:
     cmd: python -m src.zero_shot
-    frozen: true
+    frozen: false
     deps:
       - src/zero_shot.py
       - src/common/utils.py
 
-      # - data/processed/exclude.txt
       - data/processed/places.parquet
     outs:
       - data/processed/places_zero_shot.parquet

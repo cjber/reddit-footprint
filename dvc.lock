@@ -3,27 +3,23 @@ stages:
   embeddings:
     cmd: python -m src.embeddings
     deps:
-    - path: data/processed/exclude.txt
-      hash: md5
-      md5: ccec363cd1dfd0c59fa5d68bbf47565a
-      size: 462
     - path: data/processed/places.parquet
       hash: md5
-      md5: 05329ce3bd2485b5bd60eecafeab8ace
-      size: 399809368
+      md5: 44c5bf0d2ce9ad9840159a3f7f1842d4
+      size: 425378637
     - path: src/common/utils.py
       hash: md5
-      md5: 208810e2392677b6860826b6b548166d
-      size: 2335
+      md5: 7743cfd33995ab28bac0abce342aa5c8
+      size: 3217
     - path: src/embeddings.py
       hash: md5
-      md5: c67202d744b140ea6a34116fe759f248
+      md5: 96885125fc45cdb959f87b8fdc814958
       size: 1423
     outs:
     - path: data/processed/region_embeddings.parquet
       hash: md5
-      md5: c0ebfd68b716fc76e7627e4ca56b6c89
-      size: 35462
+      md5: 075d8dc57595f0de7e443a61e173ec48
+      size: 38561
   preprocesing:
     cmd: python -m src.preprocessing
     deps:
@@ -92,10 +88,14 @@ stages:
   preprocessing:
     cmd: python -m src.preprocessing
     deps:
-    - path: /home/cjber/data/en_regions.parquet
+    - path: /home/cjber/data/LAD_BUC_2022.gpkg
       hash: md5
-      md5: ecb827dcf9cb5ead5def9ba75652a6d2
-      size: 439367
+      md5: ca5bde55226f2d69d9bf5dcf7d366a58
+      size: 774144
+    - path: /home/cjber/data/RGN_EN_BUC_2022.gpkg
+      hash: md5
+      md5: 6daf76e355bb71cbd1cb505e6f90ee69
+      size: 217088
     - path: /home/cjber/data/places-2023_04_11.parquet
       hash: md5
       md5: bcb63ac9ff9597b327430e2b0188333e
@@ -104,27 +104,23 @@ stages:
       hash: md5
       md5: f495c36d310ffb50914c43fce98160b8
       size: 393266925
-    - path: data/processed/exclude.txt
-      hash: md5
-      md5: ccec363cd1dfd0c59fa5d68bbf47565a
-      size: 462
     - path: src/common/utils.py
       hash: md5
-      md5: 208810e2392677b6860826b6b548166d
-      size: 2335
+      md5: 7743cfd33995ab28bac0abce342aa5c8
+      size: 3217
     - path: src/preprocessing.py
       hash: md5
-      md5: 595285ed3ac33178d1dd067010861c23
-      size: 2988
+      md5: 7cadf388d7f88cb4f5eb47de8c1b2bb5
+      size: 3130
     outs:
     - path: data/processed/place_regions.parquet
       hash: md5
-      md5: 5d44d2f3d924b6f4de96b0b2c5922810
-      size: 185541482
+      md5: f4c3cd75dd980475dcf0e9a595f8e0fc
+      size: 198591554
     - path: data/processed/places.parquet
       hash: md5
-      md5: 05329ce3bd2485b5bd60eecafeab8ace
-      size: 399809368
+      md5: 44c5bf0d2ce9ad9840159a3f7f1842d4
+      size: 425378637
   paper:
     cmd: quarto render paper/main.qmd --execute-dir=$PWD
     deps:
