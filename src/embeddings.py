@@ -41,5 +41,5 @@ if __name__ == "__main__":
     out = mean_embeddings(output, "h3_05")
     out.write_parquet(Paths.PROCESSED / "h3_embeddings.parquet")
 
-    out = mean_embeddings(output, "RGN21NM")
+    out = mean_embeddings(output, "RGN22NM")
     out.write_parquet(Paths.PROCESSED / "region_embeddings.parquet")

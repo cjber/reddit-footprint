@@ -9,14 +9,15 @@ from src.common.utils import Const, Paths
 
 
 def join_to_regions(places_path):
-    regions = gpd.read_parquet(Paths.RAW / "en_regions.parquet")
-    lad = gpd.read_file(Paths.RAW / "local_authority_2022.gpkg")[
-        ["LAD22NM", "geometry"]
-    ]
-
+    regions = gpd.read_file(Paths.RAW / "RGN_EN_BUC_2022.gpkg").drop(
+        columns=["BNG_E", "BNG_N", "LONG", "LAT", "GlobalID"]
+    )
+    lad = gpd.read_file(Paths.RAW / "LAD_BUC_2022.gpkg").drop(
+        columns=["BNG_E", "BNG_N", "LONG", "LAT", "GlobalID"]
+    )
     df = (
         pl.read_parquet(places_path)
-        .filter(pl.col("word").is_in(Const.EXCLUDE).is_not())
+        .filter(pl.col("word").is_in(Const.EXCLUDE).not_())
         .select(
             [
                 "idx",
@@ -32,22 +33,21 @@ def join_to_regions(places_path):
         )
         .to_pandas()
     )
-
     gdf = gpd.GeoDataFrame(
-        df,
-        geometry=gpd.points_from_xy(df["easting"], df["northing"]),
-        crs=27700,
+        df, geometry=gpd.points_from_xy(df.easting, df.northing), crs=27700
     )
+    lad = gpd.sjoin(lad, regions, how="left").drop(columns="index_right")
+    gdf = gpd.sjoin(gdf, lad, how="left").drop(columns="index_right")
 
-    regions = gpd.sjoin(gdf.drop_duplicates(subset="geometry"), regions).drop(
-        "index_right", axis=1
-    )
-    regions = gpd.sjoin(regions, lad)
-
-    return pl.from_pandas(regions[["easting", "northing", "RGN21NM", "LAD22NM"]]).join(
-        pl.from_pandas(df),
-        on=["easting", "northing"],
-    )
+    gdf.loc[
+        (gdf["RGN22NM"].isna()) & (gdf["LAD22CD"].str.startswith("W")),
+        "RGN22NM",
+    ] = "Wales"
+    gdf.loc[
+        (gdf["RGN22NM"].isna()) & (gdf["LAD22CD"].str.startswith("S")),
+        "RGN22NM",
+    ] = "Scotland"
+    return pl.from_pandas(gdf.drop(columns="geometry"))
 
 
 def read_places(places_path: Path, places_full: Path) -> pl.DataFrame:

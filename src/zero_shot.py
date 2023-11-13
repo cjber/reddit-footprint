@@ -12,6 +12,7 @@ def zero_shot(places):
         "zero-shot-classification",
         model="typeform/distilbert-base-uncased-mnli",
         device=0,
+        multi_label=True,
     )
     places = places.filter(pl.col("text").str.n_chars() > 10).sample(100_000)
     corpus = Dataset.from_pandas(places[["text"]].unique().to_pandas())

@@ -27,14 +27,30 @@ class Const:
         EXCLUDE = list({line.strip() for line in exclude.readlines()})
 
 
+
+
 def process_outs():
     places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
-    regions = gpd.read_parquet(Paths.RAW / "en_regions.parquet")
-    lad = gpd.read_file(Paths.RAW / "lad-2021.gpkg")
-    lad2rgn = pd.read_csv(Paths.RAW / "lad_to_region-2021.csv")[["LAD21CD", "RGN21NM"]]
+    regions = gpd.read_file(Paths.RAW / "RGN_EN_BUC_2022.gpkg")
+    lad = gpd.read_file(Paths.RAW / "LAD_BUC_2022.gpkg")
+    lad2rgn = pd.read_csv(Paths.RAW / "LAD_RGN_2022.csv")[["LAD22CD", "RGN22NM"]]
+    scotland = lad[lad["LAD22CD"].str.startswith("S")].unary_union
+    wales = lad[lad["LAD22CD"].str.startswith("W")].unary_union
+
+    regions = pd.concat(
+        [
+            regions,
+            gpd.GeoDataFrame(
+                {"RGN22NM": ["Scotland", "Wales"]},
+                geometry=[scotland, wales],
+                crs=27700,
+            ),
+        ]
+    ).reset_index(drop=True)
 
     region_embeddings = regions.merge(
-        pd.read_parquet(Paths.PROCESSED / "region_embeddings.parquet"), on="RGN21NM"
+        pd.read_parquet(Paths.PROCESSED / "region_embeddings.parquet"),
+        on="RGN22NM",
     )
     region_embeddings["embeddings"] = (
         region_embeddings["embeddings"].to_list()
@@ -43,43 +59,38 @@ def process_outs():
         )
     ).tolist()
 
-    lad_embeddings = lad.merge(lad2rgn, on="LAD21CD", how="left").merge(
+    lad_embeddings = lad.merge(lad2rgn, on="LAD22CD", how="left").merge(
         pd.read_parquet(Paths.PROCESSED / "lad_embeddings.parquet"),
-        left_on="LAD21NM",
-        right_on="LAD22NM",
+        on="LAD22NM",
     )
+    lad_embeddings.loc[
+        lad_embeddings["LAD22CD"].str.startswith("S"), "RGN22NM"
+    ] = "Scotland"
+    lad_embeddings.loc[
+        lad_embeddings["LAD22CD"].str.startswith("W"), "RGN22NM"
+    ] = "Wales"
+
     lad_embeddings["embeddings"] = (
         lad_embeddings["embeddings"].to_list()
         / np.linalg.norm(lad_embeddings["embeddings"].to_list(), axis=1, keepdims=True)
     ).tolist()
-    lad_embeddings.loc[
-        (lad_embeddings["RGN21NM"].isna())
-        & (lad_embeddings["LAD21CD"].str.startswith("W")),
-        "RGN21NM",
-    ] = "Wales"
-    lad_embeddings.loc[
-        (lad_embeddings["RGN21NM"].isna())
-        & (lad_embeddings["LAD21CD"].str.startswith("S")),
-        "RGN21NM",
-    ] = "Scotland"
 
-    # regions["geometry"] = regions["geometry"].simplify(5000)
-    region_embeddings["geometry"] = region_embeddings["geometry"].simplify(5000)
-    lad["geometry"] = lad["geometry"].simplify(2500)
-    lad_embeddings["geometry"] = lad_embeddings["geometry"].simplify(2500)
+    # region_embeddings["geometry"] = region_embeddings["geometry"].simplify(5000)
+    # lad["geometry"] = lad["geometry"].simplify(2500)
+    # lad_embeddings["geometry"] = lad_embeddings["geometry"].simplify(2500)
 
     return places, regions, lad, region_embeddings, lad_embeddings
 
 
 def filtered_annotation(df, names, ax):
-    filtered_resid = df[df["LAD21NM"].isin(names)]
+    filtered_resid = df[df["LAD22NM"].isin(names)]
     offset = 80_000
     for _, row in filtered_resid.iterrows():
         x = row.geometry.centroid.x
         y = row.geometry.centroid.y
         if x < 300_000:
             ax.annotate(
-                row["LAD21NM"].title(),
+                row["LAD22NM"].title(),
                 xy=(x, y),
                 xytext=(
                     x - (4 * offset),
@@ -94,7 +105,7 @@ def filtered_annotation(df, names, ax):
             )
         else:
             ax.annotate(
-                row["LAD21NM"].title(),
+                row["LAD22NM"].title(),
                 xy=(x, y),
                 xytext=(
                     x + (offset),
