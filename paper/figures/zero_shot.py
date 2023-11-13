@@ -10,10 +10,6 @@ from src.common.utils import Const, Paths, process_outs
 def plt_zs_lad(zero_shot_path, lad):
     places = (
         pl.scan_parquet(zero_shot_path)
-        .filter(
-            (pl.col("word").is_in(Const.EXCLUDE).not_())
-            & (pl.col("word").is_in(["aberdeen", "highlands", "st. andrews"]).not_())
-        )
         .unique(["text", "scores"])
         .group_by(["LAD22NM", "labels"])
         .mean()
@@ -22,7 +18,7 @@ def plt_zs_lad(zero_shot_path, lad):
         .collect()
     )
 
-    p = places.to_pandas().merge(lad, left_on="LAD22NM", right_on="LAD21NM")
+    p = places.to_pandas().merge(lad, left_on="LAD22NM", right_on="LAD22NM")
     p = gpd.GeoDataFrame(p, geometry="geometry")
 
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -34,16 +30,7 @@ def plt_zs_lad(zero_shot_path, lad):
 def plt_zero_shot(zero_shot_path):
     places = (
         pl.scan_parquet(zero_shot_path)
-        .filter((pl.col("word").is_in(Const.EXCLUDE).not_()))
         .unique(["text", "scores"])
-        # some false locations
-        .with_columns(
-            RGN21NM=pl.when(
-                pl.col("word").is_in(["aberdeen", "highlands", "st. andrews"])
-            )
-            .then(pl.lit("Scotland"))
-            .otherwise(pl.col("RGN21NM"))
-        )
         .group_by(["RGN21NM", "LAD22NM", "labels"])
         .mean()
         .with_columns(
@@ -97,7 +84,7 @@ def plt_zero_shot(zero_shot_path):
             so.Agg(),
             # so.Dodge(),
         )
-        .label(x="", y="")
+        .label(x="Confidence Value", y="")
         .theme({**axes_style("ticks")})
         .on(ax)
         .layout(engine="constrained")
@@ -108,7 +95,5 @@ def plt_zero_shot(zero_shot_path):
 
 
 if __name__ == "__main__":
-    # _, _, lad, _, _ = process_outs()
     plt_zero_shot(Paths.PROCESSED / "places_zero_shot.parquet")
-    # plt_zs_lad(Paths.PROCESSED / "places_zero_shot.parquet", lad)
     plt.show()

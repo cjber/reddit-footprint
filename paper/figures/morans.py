@@ -56,15 +56,17 @@ def plt_morans(lad_embeddings, w, explained):
         lad_embeddings["pca_stdd1"].to_numpy().reshape(1, -1),
     )
 
-    for n, c in zip(range(N_COMPONENTS), ["black", "blue", "red", "yellow"]):
+    for n, m, ls, c in zip(
+        range(N_COMPONENTS), ["x", "x"], ["-", "--"], ["black", "grey"]
+    ):
         sns.regplot(
             x=f"pca_stdd{n}",
             y=f"pca_std_lag{n}",
             ci=None,
             data=lad_embeddings,
+            marker=m,
             color=c,
-            marker="x",
-            line_kws={"lw": 1},
+            line_kws={"lw": 1, "linestyle": ls},
             scatter_kws={"alpha": 0.5, "s": 10, "linewidths": 1},
         )
     ax.axvline(0, c="k", alpha=0.5, linestyle="--")
@@ -73,7 +75,7 @@ def plt_morans(lad_embeddings, w, explained):
     moran2 = esda.moran.Moran(lad_embeddings["pca_stdd1"], w)
     ax.set_title(
         f"Moran's I (1): {moran1.I:.2f}; Moran's I (2): {moran2.I:.2f};"
-        f" Cosine Similarity: {sim[0].item():.0%}",
+        f" Cosine Similarity: {sim[0].item():.2f}",
     )
     return moran1, moran2, sim
 
@@ -82,16 +84,11 @@ def plt_lisa(lad_embeddings, n):
     fig = plt.figure(figsize=(12, 8))
     gs = gridspec.GridSpec(len(n), len(n) * 3, hspace=0.1, wspace=0.1)
 
-    vmin = lad_embeddings[["pca_stdd0", "pca_stdd1"]].min().min()
-    vmax = lad_embeddings[["pca_stdd0", "pca_stdd1"]].max().max()
-
     _lisa_subplots(fig, lad_embeddings, gs, n[0], "abc")
     _lisa_subplots(fig, lad_embeddings, gs, n[1], "def")
 
 
 def _lisa_subplots(fig, lad_embeddings, gs, n, s):
-    cmap = matplotlib.colormaps["viridis"]
-
     ax = fig.add_subplot(gs[n, 0])
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("bottom", size="2%", pad=0)
@@ -164,9 +161,9 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
         ax=ax,
     )
     if s == "abc":
-        filtered_annotation(lad_embeddings, ["City of London"], ax)
+        filtered_annotation(lad_embeddings, ["City of London", "City of Edinburgh"], ax)
     else:
-        filtered_annotation(lad_embeddings, ["Glasgow City", "City of Edinburgh"], ax)
+        filtered_annotation(lad_embeddings, ["Glasgow City"], ax)
 
 
 if __name__ == "__main__":

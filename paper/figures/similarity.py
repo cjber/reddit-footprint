@@ -14,11 +14,11 @@ from src.common.utils import process_outs
 def plt_similarity(region_embeddings: pl.DataFrame):
     cosine_sim = cosine_similarity(list(region_embeddings["embeddings"]))
     cosine_sim[np.isclose(cosine_sim, 1)] = np.nan
-    cosine_sim = scale(cosine_sim)
+    cosine_sim = scale(cosine_sim.flatten()).reshape((11, 11))
     hm_frame = pl.concat(
         [
-            pl.from_pandas(region_embeddings[["RGN21NM"]]),
-            pl.DataFrame(cosine_sim, schema=region_embeddings["RGN21NM"].to_list()),
+            pl.from_pandas(region_embeddings[["RGN22NM"]]),
+            pl.DataFrame(cosine_sim, schema=region_embeddings["RGN22NM"].to_list()),
         ],
         how="horizontal",
     ).fill_nan(0)
@@ -32,15 +32,15 @@ def plt_similarity(region_embeddings: pl.DataFrame):
 
     plt.tight_layout()
 
-    vmin = hm_frame.select(pl.min_horizontal(cs.all() - cs.string()).min()).item()
-    vmax = hm_frame.select(pl.max_horizontal(cs.all() - cs.string()).max()).item()
+    vmin = -2.5
+    vmax = 2.5
 
-    for idx, i in enumerate(hm_frame.partition_by(by="RGN21NM")):
+    for idx, i in enumerate(hm_frame.partition_by(by="RGN22NM")):
         ax = plt.subplot(axs[idx])
-        name = i["RGN21NM"][0]
+        name = i["RGN22NM"][0]
         df_plt = region_embeddings.merge(
-            i.to_pandas().set_index("RGN21NM").T.reset_index(),
-            left_on="RGN21NM",
+            i.to_pandas().set_index("RGN22NM").T.reset_index(),
+            left_on="RGN22NM",
             right_on="index",
         )
 
@@ -64,7 +64,7 @@ def plt_similarity(region_embeddings: pl.DataFrame):
 
     axs = plt.subplot(axs[-1])
     region_embeddings.merge(
-        hm_frame[["RGN21NM", "Mean"]].to_pandas(), on="RGN21NM"
+        hm_frame[["RGN22NM", "Mean"]].to_pandas(), on="RGN22NM"
     ).plot(
         column="Mean",
         cmap=custom_cmap,
@@ -79,8 +79,21 @@ def plt_similarity(region_embeddings: pl.DataFrame):
     cbar_ax = fig.add_axes([0.12, 0.04, 0.79, 0.01])
     norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
     cbar = fig.colorbar(None, cax=cbar_ax, location="bottom", norm=norm)
-    # cbar.ax.set_xticks([-2.5, 0.0, 2.5])
-    # cbar.ax.set_xticklabels([-2.5, 0.0, 2.5])
+    breaks = [
+        vmin,
+        vmin + 0.5,
+        vmin + 1,
+        vmin + 1.5,
+        vmin + 2,
+        0.0,
+        vmax - 2,
+        vmax - 1.5,
+        vmax - 1,
+        vmax - 0.5,
+        vmax,
+    ]
+    cbar.ax.set_xticks(breaks)
+    cbar.ax.set_xticklabels(breaks)
 
 
 if __name__ == "__main__":

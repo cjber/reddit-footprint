@@ -15,14 +15,14 @@ def process_embeddings(df):
     embeddings = df["embeddings"].to_list()
     embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-    clustering_model = AgglomerativeClustering(n_clusters=None, distance_threshold=1.5)
-    clustering_model.fit(embeddings)
-    df["cluster"] = clustering_model.labels_
-
     umap2 = umap.UMAP(n_components=2, random_state=Const.SEED)
     pca_vecs = umap2.fit_transform(embeddings)
     df["vecx"] = pca_vecs[:, 0]
     df["vecy"] = pca_vecs[:, 1]
+
+    clustering_model = AgglomerativeClustering(n_clusters=3)
+    clustering_model.fit(pca_vecs)
+    df["cluster"] = clustering_model.labels_
 
     pca_1 = PCA(n_components=1, random_state=Const.SEED)
     pca_result = pca_1.fit_transform(embeddings)
@@ -57,7 +57,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
     ax.set_title("(b)")
     sns.histplot(
         data=df,
-        x="RGN21NM",
+        x="RGN22NM",
         stat="proportion",
         hue="cluster",
         multiple="fill",
@@ -92,7 +92,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
             "Glasgow City",
             "City of Edinburgh",
             "Cardiff",
-            "Pembrokeshire",
+            # "Pembrokeshire",
             "City of London",
         ],
         ax,
@@ -103,6 +103,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
 
 if __name__ == "__main__":
     _, regions, _, _, lad_embeddings = process_outs()
+    regions["RGN22NM"]
 
     plt_place_vectors(lad_embeddings, regions)
     plt.show()
