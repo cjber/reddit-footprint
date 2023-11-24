@@ -27,6 +27,8 @@ dependencies = [
     "umap-learn>=0.5.3",
     "pyqt6>=6.5.2",
     "jupyter-cache>=0.6.1",
+    "dvc-s3>=2.23.0",
+    "clustergram>=0.8.0",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}

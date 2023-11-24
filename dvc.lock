@@ -9,13 +9,21 @@ stages:
       size: 425378637
     - path: src/common/utils.py
       hash: md5
-      md5: 7743cfd33995ab28bac0abce342aa5c8
-      size: 3217
+      md5: 3398557ca6bce5de21c384da1a014d4a
+      size: 3780
     - path: src/embeddings.py
       hash: md5
       md5: 96885125fc45cdb959f87b8fdc814958
       size: 1423
     outs:
+    - path: data/processed/h3_embeddings.parquet
+      hash: md5
+      md5: aca626d511c7c690212c4c1b9cde11fe
+      size: 4003966
+    - path: data/processed/lad_embeddings.parquet
+      hash: md5
+      md5: 2bb9a6ac20d897e18c7d297ea94c035c
+      size: 1145890
     - path: data/processed/region_embeddings.parquet
       hash: md5
       md5: 075d8dc57595f0de7e443a61e173ec48
@@ -64,22 +72,18 @@ stages:
   zero_shot:
     cmd: python -m src.zero_shot
     deps:
-    - path: data/processed/exclude.txt
-      hash: md5
-      md5: ccec363cd1dfd0c59fa5d68bbf47565a
-      size: 462
     - path: data/processed/places.parquet
       hash: md5
-      md5: e70ae6ce5711f8a1d7fc0ab9293c3d26
-      size: 400063838
+      md5: 44c5bf0d2ce9ad9840159a3f7f1842d4
+      size: 425378637
     - path: src/common/utils.py
       hash: md5
-      md5: 208810e2392677b6860826b6b548166d
-      size: 2335
+      md5: 3398557ca6bce5de21c384da1a014d4a
+      size: 3780
     - path: src/zero_shot.py
       hash: md5
-      md5: 069fb8bf521977f1deca420064ccb8b7
-      size: 1132
+      md5: 459664bbb46dfd349a2fe8d97e54113b
+      size: 1152
     outs:
     - path: data/processed/places_zero_shot.parquet
       hash: md5
@@ -104,10 +108,14 @@ stages:
       hash: md5
       md5: f495c36d310ffb50914c43fce98160b8
       size: 393266925
+    - path: data/processed/exclude.txt
+      hash: md5
+      md5: a1cac4529820d5a3832e36171e8603ac
+      size: 379
     - path: src/common/utils.py
       hash: md5
-      md5: 7743cfd33995ab28bac0abce342aa5c8
-      size: 3217
+      md5: 3398557ca6bce5de21c384da1a014d4a
+      size: 3780
     - path: src/preprocessing.py
       hash: md5
       md5: 7cadf388d7f88cb4f5eb47de8c1b2bb5
@@ -126,20 +134,20 @@ stages:
     deps:
     - path: data/processed
       hash: md5
-      md5: 801c63d1d5cbf77a4ceec4a155531cf4.dir
-      size: 5472372427
-      nfiles: 10
+      md5: e624d5139973d076529084c9f86415bf.dir
+      size: 954341138
+      nfiles: 8
     - path: paper/figures
       hash: md5
-      md5: 3728cd7e51fa62f446deea835816336b.dir
-      size: 71450
-      nfiles: 14
+      md5: 32769189f88df04400243fecd900476e.dir
+      size: 108759
+      nfiles: 22
     - path: paper/main.qmd
       hash: md5
-      md5: 7490778233925d0ecddf112cfae1b7c1
-      size: 39894
+      md5: 08a898135071859a06130500d527339d
+      size: 47826
     outs:
     - path: paper/main.pdf
       hash: md5
-      md5: b48a5a5d1f055b26fc413741ef845576
-      size: 4800021
+      md5: 0bee016266a50a34dbe3275911559a69
+      size: 3722051

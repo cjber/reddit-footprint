@@ -25,6 +25,8 @@ stages:
       - data/processed/places.parquet
     outs:
       - data/processed/region_embeddings.parquet
+      - data/processed/lad_embeddings.parquet
+      - data/processed/h3_embeddings.parquet
   zero_shot:
     cmd: python -m src.zero_shot
     frozen: false
