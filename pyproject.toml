@@ -6,29 +6,23 @@ authors = [
     {name = "", email = ""},
 ]
 dependencies = [
-    "torch>=2.0.1",
-    "sentence-transformers>=2.2.2",
-    "polars>=0.17.13",
-    "pyarrow>=12.0.0",
-    "geopandas>=0.13.0",
-    "seaborn>=0.12.2",
-    "jupyter>=1.0.0",
+    "torch>=2.2.0",
+    "sentence-transformers>=2.3.1",
+    "datasets>=2.17.0",
+    "polars>=0.20.7",
+    "pyarrow>=15.0.0",
+    "geopandas>=0.14.3",
+    "seaborn>=0.13.2",
     "tabulate>=0.9.0",
+    "pysal>=24.1",
+    "h3pandas>=0.2.6",
+    "esda>=2.5.1",
+    "umap-learn>=0.5.5",
+    "jupyterlab>=4.1.0",
+]
+dev = [
     "ipdb>=0.13.13",
-    "datasets>=2.12.0",
-    "scienceplots>=2.0.1",
     "dvc>=2.58.1",
-    "evaluate>=0.4.0",
-    "accelerate>=0.19.0",
-    "pysal>=23.1",
-    "h3pandas>=0.2.4",
-    "esda>=2.4.3",
-    "docrepr>=0.2.0",
-    "umap-learn>=0.5.3",
-    "pyqt6>=6.5.2",
-    "jupyter-cache>=0.6.1",
-    "dvc-s3>=2.23.0",
-    "clustergram>=0.8.0",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
