@@ -8,10 +8,10 @@ stages:
 
       - data/processed/exclude.txt
 
-      - /home/cjber/data/places-2023_04_11.parquet
-      - /home/cjber/data/places_full-2023_04_11.parquet
-      - /home/cjber/data/RGN_EN_BUC_2022.gpkg
-      - /home/cjber/data/LAD_BUC_2022.gpkg
+      - data/raw/places-2023_04_11.parquet
+      - data/raw/places_full-2023_04_11.parquet
+      - data/raw/RGN_EN_BUC_2022.gpkg
+      - data/raw/LAD_BUC_2022.gpkg
     outs:
       - data/processed/place_regions.parquet
       - data/processed/places.parquet
