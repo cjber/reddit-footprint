@@ -5,7 +5,7 @@ execute:
     enabled: true
     echo: false
     warning: false
-    cache: false
+    freeze: auto
 author:
   - name: Anonymous
 format:
@@ -17,9 +17,6 @@ format:
     keep-tex: true
     keep-ipynb: true
     running-header: " "
-  # arxiv-html: default
-  # docx:
-  #   number-sections: true
 keywords:
   - vernacular geography
   - semantics

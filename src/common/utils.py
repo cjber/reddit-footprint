@@ -16,7 +16,7 @@ plt.rcParams.update({"font.size": 8, "text.usetex": False})
 
 
 class Paths:
-    RAW = Path(os.environ["DATA_DIR"])
+    RAW = Path("data/raw")
     PROCESSED = Path("data/processed")
 
 
