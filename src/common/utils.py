@@ -27,8 +27,6 @@ class Const:
         EXCLUDE = list({line.strip() for line in exclude.readlines()})
 
 
-
-
 def process_outs():
     places = pl.read_parquet(Paths.PROCESSED / "places.parquet")
     regions = gpd.read_file(Paths.RAW / "RGN_EN_BUC_2022.gpkg")

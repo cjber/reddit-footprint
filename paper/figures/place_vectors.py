@@ -5,10 +5,43 @@ import seaborn as sns
 import umap
 from matplotlib import gridspec
 from matplotlib.colors import ListedColormap
-from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram
+from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.decomposition import PCA
 
 from src.common.utils import Const, filtered_annotation, process_outs
+
+
+def plot_dendrogram(model, **kwargs):
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = sum(
+            1 if child_idx < n_samples else counts[child_idx - n_samples]
+            for child_idx in merge
+        )
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack(
+        [model.children_, model.distances_, counts]
+    ).astype(float)
+
+    dendrogram(linkage_matrix, **kwargs)
+
+
+def app_dendogram(df):
+    embeddings = df["embeddings"].to_list()
+    embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
+
+    umap2 = umap.UMAP(n_components=2, random_state=Const.SEED)
+    pca_vecs = umap2.fit_transform(embeddings)
+    df["vecx"] = pca_vecs[:, 0]
+    df["vecy"] = pca_vecs[:, 1]
+
+    clustering_model = AgglomerativeClustering(distance_threshold=0, n_clusters=None)
+
+    clustering_model.fit(pca_vecs)
+    plot_dendrogram(clustering_model, truncate_mode="level", p=3)
 
 
 def process_embeddings(df):
@@ -103,7 +136,10 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
 
 if __name__ == "__main__":
     _, regions, _, _, lad_embeddings = process_outs()
-    regions["RGN22NM"]
+    x = process_outs()
+    x[0].filter(pl.col("text").str.contains("gonnae"))['RGN22NM'].value_counts()
 
     plt_place_vectors(lad_embeddings, regions)
+    plt.show()
+    app_dendogram(lad_embeddings)
     plt.show()

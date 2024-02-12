@@ -77,6 +77,8 @@ def plt_morans(lad_embeddings, w, explained):
         f"Moran's I (1): {moran1.I:.2f}; Moran's I (2): {moran2.I:.2f};"
         f" Cosine Similarity: {sim[0].item():.2f}",
     )
+    ax.set_xlabel("Standardized PCA Embedding")
+    ax.set_ylabel("Lag Standardized PCA Embedding")
     return moran1, moran2, sim
 
 
