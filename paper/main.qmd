@@ -3,6 +3,7 @@ title: "Mapping Great Britain's Semantic Footprints through a Large Language Mod
 engine: jupyter
 execute:
     enabled: true
+    keep-ipynb: true
     echo: false
     warning: false
     freeze: auto
@@ -13,9 +14,6 @@ format:
     linenumbers: true
     doublespacing: true
     authorcols: true
-    keep-md: true
-    keep-tex: true
-    keep-ipynb: true
     running-header: " "
 keywords:
   - vernacular geography
