@@ -1,11 +1,11 @@
 import esda
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import umap
 from esda.moran import Moran_Local
 from matplotlib import gridspec
+from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pysal.lib import weights
 from sklearn.metrics.pairwise import cosine_similarity
@@ -49,15 +49,21 @@ def process_moran(lad_embeddings):
 
 
 def plt_morans(lad_embeddings, w, explained):
+    # fig, axs = plt.subplots(nrows=2, ncols=1, layout="tight", figsize=(12, 8))
     fig, ax = plt.subplots()
 
     sim = cosine_similarity(
         lad_embeddings["pca_stdd0"].to_numpy().reshape(1, -1),
         lad_embeddings["pca_stdd1"].to_numpy().reshape(1, -1),
     )
+    cmap = sns.color_palette()[:2]
 
     for n, m, ls, c in zip(
-        range(N_COMPONENTS), ["x", "x"], ["-", "--"], ["black", "grey"]
+        range(N_COMPONENTS),
+        [".", "x"],
+        ["-", "-"],
+        cmap,
+        strict=False,
     ):
         sns.regplot(
             x=f"pca_stdd{n}",
@@ -68,13 +74,14 @@ def plt_morans(lad_embeddings, w, explained):
             color=c,
             line_kws={"lw": 1, "linestyle": ls},
             scatter_kws={"alpha": 0.5, "s": 10, "linewidths": 1},
+            ax=ax,
         )
     ax.axvline(0, c="k", alpha=0.5, linestyle="--")
     ax.axhline(0, c="k", alpha=0.5, linestyle="--")
     moran1 = esda.moran.Moran(lad_embeddings["pca_stdd0"], w)
     moran2 = esda.moran.Moran(lad_embeddings["pca_stdd1"], w)
     ax.set_title(
-        f"Moran's I (1): {moran1.I:.2f}; Moran's I (2): {moran2.I:.2f};"
+        f"Moran's I (1; Blue): {moran1.I:.2f}; Moran's I (2; Orange): {moran2.I:.2f};"
         f" Cosine Similarity: {sim[0].item():.2f}",
     )
     ax.set_xlabel("Standardized PCA Embedding")
@@ -116,7 +123,7 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
         vmax=1,
         vmin=-1,
         edgecolor="face",
-        cmap="viridis",
+        cmap="BrBG",
         ax=ax,
         cax=cax,
         legend=True,
@@ -143,7 +150,7 @@ def _lisa_subplots(fig, lad_embeddings, gs, n, s):
 
     lad_embeddings.plot(
         "cmap",
-        cmap="viridis",
+        cmap=ListedColormap(["firebrick", "lightslategrey", "seagreen"]),
         edgecolor="face",
         categorical=True,
         missing_kwds={

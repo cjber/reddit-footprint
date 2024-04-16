@@ -1,4 +1,5 @@
 import geopandas as gpd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn.objects as so
@@ -33,19 +34,25 @@ def plt_zero_shot(zero_shot_path):
         .unique(["text", "scores"])
         .group_by(["RGN21NM", "LAD22NM", "labels"])
         .mean()
-        .with_columns(
-            pl.col("labels").map_dict(
-                {"English": "E", "British": "B", "Scottish": "S", "Welsh": "W"}
-            ),
-        )
-        .with_columns(
-            pl.when(pl.col("labels") == "B")
-            .then(pl.col("scores").mean().over(["RGN21NM", "labels"]))
-            .alias("sort_order")
-        )
+        # .with_columns(
+        #     pl.col("labels").replace(
+        #         {"English": "E", "British": "B", "Scottish": "S", "Welsh": "W"}
+        #     ),
+        # )
         .collect(streaming=True)
-        .sort("sort_order", descending=True)
     )
+    idx = list(
+        enumerate(
+            places.filter(pl.col("labels") == "British")
+            .group_by("RGN21NM")
+            .mean()
+            .sort("scores", descending=True)["RGN21NM"]
+            .to_list()
+        )
+    )
+    places = places.join(
+        pl.DataFrame(idx), left_on="RGN21NM", right_on="column_1"
+    ).sort("column_0")
 
     fig, ax = plt.subplots()
     ax.hlines(
@@ -73,23 +80,43 @@ def plt_zero_shot(zero_shot_path):
             color="labels",
         )
         .add(
-            so.Range(linewidth=0.5, color="black"),
+            so.Range(linewidth=1, color="black"),
             so.Est(seed=0, errorbar="se"),
-            so.Shift(y=0.2),
-            # so.Dodge(),
+            # so.Shift(y=0.1),
+            so.Dodge(),
         )
         .add(
-            so.Text(offset=0, valign="center", color="black", fontsize=8),
-            # so.Dot(edgewidth=1, edgecolor="black", artist_kws={"zorder": 10}),
+            # so.Text(
+            #     artist_kws={"fontweight": "bold"}, offset=0, valign="center", fontsize=8
+            # ),
+            so.Dot(edgewidth=1, edgecolor="black", artist_kws={"zorder": 10}),
             so.Agg(),
-            # so.Dodge(),
+            so.Dodge(),
         )
         .label(x="Confidence Value", y="")
         .theme({**axes_style("ticks")})
         .on(ax)
-        .layout(engine="constrained")
+        .layout(engine="tight")
+        .scale(
+            color={
+                "Scottish": "#1f77b4",
+                "English": "#ff7f0e",
+                "British": "#2ca02c",
+                "Welsh": "#d62728",
+            },
+        )
         .plot()
     )
+    legend_contents = _._legend_contents
+    handles = []
+    labels = []
+    blank_handle = mpl.patches.Patch(alpha=0, linewidth=0, visible=False)
+    for legend_content in legend_contents:
+        handles.append(blank_handle)
+        handles.extend(legend_content[1])
+        labels.append(legend_content[0][0])
+        labels.extend(legend_content[2])
+    ax.legend(handles[6:], labels[6:], frameon=False)
     fig.legends = []
     _.show()
 

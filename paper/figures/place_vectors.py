@@ -6,7 +6,7 @@ import umap
 from matplotlib import gridspec
 from matplotlib.colors import ListedColormap
 from scipy.cluster.hierarchy import dendrogram
-from sklearn.cluster import AgglomerativeClustering, KMeans
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
 from src.common.utils import Const, filtered_annotation, process_outs
@@ -67,7 +67,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
     df = process_embeddings(df)
 
     fig = plt.figure(figsize=(8, 6))
-    custom_cmap = ListedColormap(sns.color_palette("viridis_r"))
+    custom_cmap = ListedColormap(sns.color_palette()[:3])
 
     gs = gridspec.GridSpec(2, 2, width_ratios=[1, 1])
     ax = fig.add_subplot(gs[0, 0])
@@ -136,8 +136,7 @@ def plt_place_vectors(df: pl.DataFrame, rgn) -> None:
 
 if __name__ == "__main__":
     _, regions, _, _, lad_embeddings = process_outs()
-    x = process_outs()
-    x[0].filter(pl.col("text").str.contains("gonnae"))['RGN22NM'].value_counts()
+    lad_embeddings
 
     plt_place_vectors(lad_embeddings, regions)
     plt.show()
